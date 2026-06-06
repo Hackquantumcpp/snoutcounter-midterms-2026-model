@@ -1,4 +1,4 @@
-,year,state,state_po,special,district,dem,rep,totalvotes,dem_cand,rep_cand,dem_inc,rep_inc,dem_funds,rep_funds,2party_votes,dem_pct_2p,rep_pct_2p,dem_tot_funds,rep_tot_funds,tot_funds,dem_funds_2p_pct,rep_funds_2p_pct
+year,state,state_po,special,district,dem,rep,totalvotes,dem_cand,rep_cand,dem_inc,rep_inc,dem_funds,rep_funds,2party_votes,dem_pct_2p,rep_pct_2p,dem_tot_funds,rep_tot_funds,tot_funds,dem_funds_2p_pct,rep_funds_2p_pct
 0,2018,Alabama,AL,False,1,89226.0,153228.0,242617,Robert Kennedy Jr,Bradley Byrne,False,True,39095.21,343761.59,242454.0,36.80120765176075,63.19879234823925,39095.21,343761.59,382856.80000000005,10.21144459233844,89.78855540766155
 1,2018,Alabama,AL,False,2,86931.0,138879.0,226230,Tabitha Isner,Martha Roby,False,True,501490.57,799289.56,225810.0,38.49740932642487,61.50259067357513,501490.57,799289.56,1300780.1300000001,38.553061999801606,61.446938000198394
 2,2018,Alabama,AL,False,3,83996.0,147770.0,231915,Mallory Hagan,Mike Rogers,False,True,409309.26,530372.0,231766.0,36.241726569039464,63.758273430960536,409309.26,530372.0,939681.26,43.55830827146644,56.44169172853357
