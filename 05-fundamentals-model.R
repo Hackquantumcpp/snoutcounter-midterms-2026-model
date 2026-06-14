@@ -61,9 +61,38 @@ mae <- mean(abs(y_hat_mean - y_act))
 
 mde <- mean(y_hat_mean - y_act) # Directional
 
+test_data <- test_data %>% mutate(
+  y_pred = y_hat_mean,
+  y_act = dem_pct_2p
+) %>% mutate(
+  abs_err = abs(y_pred - y_act)
+)
+
 ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
   labs(
     x = "Predicted values",
     y = "Actual values",
     title = "Predicted vs actual"
-  ) + xlim(40, 60)
+  ) + xlim(40, 60) + ylim(35, 65)
+
+
+# Backtesting
+
+pre24 <- data %>% filter(year < 2024)
+
+data_24 <- data %>% filter(year == 2024)
+
+backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
+                                       dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
+                                       (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year),
+                                     family = gaussian(),
+                                     data = pre24,
+                                     prior = normal(0, 1, autoscale = TRUE),
+                                     adapt_delta = 0.99,
+                                     refresh = 100,
+                                     iter = 5000*2,
+                                     seed = 1010
+)
+print(backtest_model)
+
+poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
