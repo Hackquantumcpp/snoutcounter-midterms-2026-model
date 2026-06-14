@@ -12,11 +12,15 @@ data <- data %>% mutate(
   dem_funds_2p_pct_sqrd = dem_funds_2p_pct**2
 )
 
+train_data <- data %>% sample_frac(0.67)
+
+test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
+
 fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state) + factor(year),
                    family = gaussian(),
-                   data = data,
+                   data = train_data,
                    prior = normal(0, 1, autoscale = TRUE),
                    adapt_delta = 0.99,
                    refresh = 100,
@@ -43,3 +47,23 @@ rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                    "factor(year)2020", "factor(year)2022"))
 
+# Validation
+
+y_hat <- posterior_predict(fit, newdata = test_data)
+
+pp_check(fit, nreps = 50)
+
+y_hat_mean <- colMeans(y_hat)
+
+y_act = test_data$dem_pct_2p
+
+mae <- mean(abs(y_hat_mean - y_act))
+
+mde <- mean(y_hat_mean - y_act) # Directional
+
+ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
+  labs(
+    x = "Predicted values",
+    y = "Actual values",
+    title = "Predicted vs actual"
+  ) + xlim(40, 60)
