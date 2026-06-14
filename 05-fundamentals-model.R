@@ -96,3 +96,32 @@ backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
 print(backtest_model)
 
 poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
+
+pp_check(backtest_model, nreps = 100)
+
+y_hat_2024 <- colMeans(poster_2024)
+
+fund_chances <- apply(poster_2024, 2, \(x) mean(x > 50) * 100)
+
+tot_seats_sims <- apply(poster_2024, 1, \(x) sum(x > 50))
+
+y_act_2024 <- data_24$dem_pct_2p
+
+mae <- mean(abs(y_hat_2024 - y_act_2024))
+
+data_24 <- data_24 %>% mutate(
+  y_pred = y_hat_2024,
+  y_act = dem_pct_2p,
+  fund_chances = fund_chances
+) %>% mutate(
+  abs_err = abs(y_pred - y_act)
+)
+
+ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
+  labs(
+    x = "Predicted values",
+    y = "Actual values",
+    title = "Predicted vs actual (Backtesting, 2024)"
+  ) + xlim(40, 60) + ylim(35, 65)
+
+ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
