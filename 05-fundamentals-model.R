@@ -84,7 +84,8 @@ data_24 <- data %>% filter(year == 2024)
 
 backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                                       (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year),
+                                       (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
+                                (1 | state:year),
                                      family = gaussian(),
                                      data = pre24,
                                      prior = normal(0, 1, autoscale = TRUE),
