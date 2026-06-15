@@ -84,6 +84,7 @@ data_24 <- data %>% filter(year == 2024)
 
 backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
+                                        cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_asn_pct +
                                        (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
                                 (1 | state:year),
                                      family = gaussian(),
@@ -95,19 +96,28 @@ backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                      seed = 1010
 )
 print(backtest_model)
+print(fixef(backtest_model))
+print(ranef(backtest_model))
 
 mcmc_trace(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_trace(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
+                                    "cvap_black_pct", "cvap_asn_pct"))
 mcmc_dens_overlay(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                            "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_dens_overlay(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
+                                           "cvap_black_pct", "cvap_asn_pct"))
 mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
 mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
 neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy",
-                                    "dem_funds_2p_pct_sqrd"))
+                                    "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", 
+                                    "cvap_white_pct",
+                                    "cvap_black_pct", "cvap_asn_pct"))
 rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
                               "dem_inc_dummy", "rep_inc_dummy",
-                              "dem_funds_2p_pct_sqrd"))
+                              "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", "cvap_white_pct",
+                              "cvap_black_pct", "cvap_asn_pct"))
 neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
@@ -119,6 +129,7 @@ rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
                                     "Sigma[state:(Intercept),(Intercept)]"))
 
+set.seed(42)
 poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
 
 pp_check(backtest_model, nreps = 100)
