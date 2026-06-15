@@ -96,6 +96,29 @@ backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
 )
 print(backtest_model)
 
+mcmc_trace(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                    "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_dens_overlay(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                           "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
+mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
+neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                    "dem_inc_dummy", "rep_inc_dummy",
+                                    "dem_funds_2p_pct_sqrd"))
+rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                              "dem_inc_dummy", "rep_inc_dummy",
+                              "dem_funds_2p_pct_sqrd"))
+neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                                    "Sigma[rep_cand:(Intercept),(Intercept)]",
+                                    "Sigma[year:(Intercept),(Intercept)]",
+                                    "Sigma[state:year:(Intercept),(Intercept)]",
+                                    "Sigma[state:(Intercept),(Intercept)]"))
+rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                                    "Sigma[rep_cand:(Intercept),(Intercept)]",
+                                    "Sigma[year:(Intercept),(Intercept)]",
+                                    "Sigma[state:year:(Intercept),(Intercept)]",
+                                    "Sigma[state:(Intercept),(Intercept)]"))
+
 poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
 
 pp_check(backtest_model, nreps = 100)
@@ -126,3 +149,7 @@ ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
   ) + xlim(40, 60) + ylim(35, 65)
 
 ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
+
+data_24 <- data_24 %>% mutate(district_id = str_remove_all(district, "-"))
+
+write_csv(data_24, "backtesting_res_fundamentals_2024.csv")
