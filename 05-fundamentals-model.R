@@ -65,7 +65,8 @@ test_data <- test_data %>% mutate(
   y_pred = y_hat_mean,
   y_act = dem_pct_2p
 ) %>% mutate(
-  abs_err = abs(y_pred - y_act)
+  abs_err = abs(y_pred - y_act),
+  err = y_pred - y_act
 )
 
 ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
@@ -76,7 +77,7 @@ ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
   ) + xlim(40, 60) + ylim(35, 65)
 
 
-# Backtesting
+# Backtesting (2024)
 
 pre24 <- data %>% filter(year < 2024)
 
@@ -149,7 +150,8 @@ data_24 <- data_24 %>% mutate(
   y_act = dem_pct_2p,
   fund_chances = fund_chances
 ) %>% mutate(
-  abs_err = abs(y_pred - y_act)
+  abs_err = abs(y_pred - y_act),
+  err = y_pred - y_act
 )
 
 ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
@@ -161,6 +163,97 @@ ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
 
 ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
 
+View(data_24 %>% filter((y_act < 55 & y_act > 45) | (y_pred < 55 & y_pred > 45)) %>% select(year, district, dem_cand, rep_cand, y_pred, y_act, abs_err, fund_chances))
+
 data_24 <- data_24 %>% mutate(district_id = str_remove_all(district, "-"))
 
 write_csv(data_24, "backtesting_res_fundamentals_2024.csv")
+
+# Backtesting (2018)
+
+post18 <- data %>% filter(year > 2018)
+
+data_18 <- data %>% filter(year == 2018)
+
+backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
+                                dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
+                                cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_asn_pct +
+                                (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
+                                (1 | state:year),
+                              family = gaussian(),
+                              data = post18,
+                              prior = normal(0, 1, autoscale = TRUE),
+                              adapt_delta = 0.99,
+                              refresh = 100,
+                              iter = 5000*2,
+                              seed = 1010
+)
+print(backtest_model)
+print(fixef(backtest_model))
+print(ranef(backtest_model))
+
+mcmc_trace(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                    "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_trace(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
+                                    "cvap_black_pct", "cvap_asn_pct"))
+mcmc_dens_overlay(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                           "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_dens_overlay(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
+                                           "cvap_black_pct", "cvap_asn_pct"))
+mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
+mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
+neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                    "dem_inc_dummy", "rep_inc_dummy",
+                                    "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", 
+                                    "cvap_white_pct",
+                                    "cvap_black_pct", "cvap_asn_pct"))
+rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                              "dem_inc_dummy", "rep_inc_dummy",
+                              "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", "cvap_white_pct",
+                              "cvap_black_pct", "cvap_asn_pct"))
+neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                                    "Sigma[rep_cand:(Intercept),(Intercept)]",
+                                    "Sigma[year:(Intercept),(Intercept)]",
+                                    "Sigma[state:year:(Intercept),(Intercept)]",
+                                    "Sigma[state:(Intercept),(Intercept)]"))
+rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                              "Sigma[rep_cand:(Intercept),(Intercept)]",
+                              "Sigma[year:(Intercept),(Intercept)]",
+                              "Sigma[state:year:(Intercept),(Intercept)]",
+                              "Sigma[state:(Intercept),(Intercept)]"))
+set.seed(42)
+poster_2018 <- posterior_predict(backtest_model, newdata = data_18)
+
+pp_check(backtest_model, nreps = 100)
+
+y_hat_2018 <- colMeans(poster_2018)
+
+fund_chances <- apply(poster_2018, 2, \(x) mean(x > 50) * 100)
+
+tot_seats_sims <- apply(poster_2018, 1, \(x) sum(x > 50))
+
+y_act_2018 <- data_18$dem_pct_2p
+
+mae <- mean(abs(y_hat_2018 - y_act_2018))
+
+data_18 <- data_18 %>% mutate(
+  y_pred = y_hat_2018,
+  y_act = dem_pct_2p,
+  fund_chances = fund_chances
+) %>% mutate(
+  abs_err = abs(y_pred - y_act),
+  err = y_pred - y_act
+)
+
+ggplot() + geom_point(mapping = aes(x = y_hat_2018, y = y_act_2018)) +
+  labs(
+    x = "Predicted values",
+    y = "Actual values",
+    title = "Predicted vs actual (Backtesting, 2018)"
+  ) + xlim(40, 60) + ylim(35, 65)
+
+ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
+
+data_18 <- data_18 %>% mutate(district_id = str_remove_all(district, "-"))
+
+write_csv(data_18, "backtesting_res_fundamentals_2018.csv")
