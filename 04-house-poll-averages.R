@@ -14,4 +14,5 @@ filepath <- "data/polls/house_polls_historical.csv"
 
 polls <- read_csv(filepath)
 
-polls <- polls %>% filter(!(display_name %in% banned_pollsters))
+polls <- polls %>% filter(!(display_name %in% banned_pollsters)) %>%
+  filter(stage == "general" & hypothetical == FALSE)

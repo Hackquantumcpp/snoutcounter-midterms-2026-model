@@ -3,6 +3,7 @@ library(janitor)
 library(rstan)
 library(rstanarm)
 library(bayesplot)
+library(matrixStats)
 
 options(mc.cores = parallel::detectCores(logical = FALSE))
 
@@ -12,16 +13,20 @@ data <- data %>% mutate(
   dem_funds_2p_pct_sqrd = dem_funds_2p_pct**2
 )
 
+set.seed(42)
+
 train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
 fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                     (1 | dem_cand) + (1 | rep_cand) + (1 | state) + factor(year),
+                     cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_asn_pct +
+                     (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
+                     (1 | state:year),
                    family = gaussian(),
                    data = train_data,
-                   prior = normal(0, 1, autoscale = TRUE),
+                   prior = normal(0, 2.5, autoscale = TRUE),
                    adapt_delta = 0.99,
                    refresh = 100,
                    iter = 5000*2,
@@ -42,16 +47,30 @@ mcmc_dens_overlay(fit, pars = c("generic_ballot_avg",
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
 neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                          "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
-                         "factor(year)2020", "factor(year)2022"))
+                         "cvap_hisp_pct", 
+                         "cvap_white_pct",
+                         "cvap_black_pct", "cvap_asn_pct"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
-                   "factor(year)2020", "factor(year)2022"))
+                   "cvap_hisp_pct", 
+                   "cvap_white_pct",
+                   "cvap_black_pct", "cvap_asn_pct"))
+neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                                    "Sigma[rep_cand:(Intercept),(Intercept)]",
+                                    "Sigma[year:(Intercept),(Intercept)]",
+                                    "Sigma[state:year:(Intercept),(Intercept)]",
+                                    "Sigma[state:(Intercept),(Intercept)]"))
+rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                              "Sigma[rep_cand:(Intercept),(Intercept)]",
+                              "Sigma[year:(Intercept),(Intercept)]",
+                              "Sigma[state:year:(Intercept),(Intercept)]",
+                              "Sigma[state:(Intercept),(Intercept)]"))
 
 # Validation
 
 y_hat <- posterior_predict(fit, newdata = test_data)
 
-pp_check(fit, nreps = 50)
+pp_check(fit, nreps = 100)
 
 y_hat_mean <- colMeans(y_hat)
 
@@ -61,12 +80,17 @@ mae <- mean(abs(y_hat_mean - y_act))
 
 mde <- mean(y_hat_mean - y_act) # Directional
 
+fund_chances <- apply(y_hat, 2, \(x) mean(x > 50) * 100)
+
+tot_seats_sims <- apply(y_hat, 1, \(x) sum(x > 50))
+
 test_data <- test_data %>% mutate(
   y_pred = y_hat_mean,
   y_act = dem_pct_2p
 ) %>% mutate(
   abs_err = abs(y_pred - y_act),
-  err = y_pred - y_act
+  err = y_pred - y_act,
+  fund_chances = fund_chances
 )
 
 ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
@@ -90,7 +114,7 @@ backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                 (1 | state:year),
                                      family = gaussian(),
                                      data = pre24,
-                                     prior = normal(0, 1, autoscale = TRUE),
+                                     prior = normal(0, 2.5, autoscale = TRUE),
                                      adapt_delta = 0.99,
                                      refresh = 100,
                                      iter = 5000*2,
@@ -130,12 +154,13 @@ rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
                                     "Sigma[state:(Intercept),(Intercept)]"))
 
-set.seed(42)
 poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
 
 pp_check(backtest_model, nreps = 100)
 
 y_hat_2024 <- colMeans(poster_2024)
+
+sd_yhat_2024 <- colSds(poster_2024)
 
 fund_chances <- apply(poster_2024, 2, \(x) mean(x > 50) * 100)
 
@@ -148,10 +173,15 @@ mae <- mean(abs(y_hat_2024 - y_act_2024))
 data_24 <- data_24 %>% mutate(
   y_pred = y_hat_2024,
   y_act = dem_pct_2p,
+  y_pred_sd = sd_yhat_2024,
   fund_chances = fund_chances
 ) %>% mutate(
   abs_err = abs(y_pred - y_act),
   err = y_pred - y_act
+) %>% mutate(
+  z = err / y_pred_sd
+) %>% mutate(
+  correct = if_else(abs(z) < 2, TRUE, FALSE)
 )
 
 ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
@@ -160,6 +190,12 @@ ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
     y = "Actual values",
     title = "Predicted vs actual (Backtesting, 2024)"
   ) + xlim(40, 60) + ylim(35, 65)
+
+ggplot(data = data_24, mapping = aes(x = y_pred, y = fund_chances)) + geom_point() +
+  labs(
+    x = "Predicted values",
+    y = "Predicted chances"
+  )
 
 ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
 
@@ -182,7 +218,7 @@ backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                 (1 | state:year),
                               family = gaussian(),
                               data = post18,
-                              prior = normal(0, 1, autoscale = TRUE),
+                              prior = normal(0, 2.5, autoscale = TRUE),
                               adapt_delta = 0.99,
                               refresh = 100,
                               iter = 5000*2,
