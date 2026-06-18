@@ -181,7 +181,10 @@ data_24 <- data_24 %>% mutate(
 ) %>% mutate(
   z = err / y_pred_sd
 ) %>% mutate(
-  correct = if_else(abs(z) < 2, TRUE, FALSE)
+  correct = if_else(abs(z) < 2, TRUE, FALSE),
+  index = row_number()
+) %>% mutate(
+  sims = lapply(index, function(index) poster_2024[, index])
 )
 
 ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
