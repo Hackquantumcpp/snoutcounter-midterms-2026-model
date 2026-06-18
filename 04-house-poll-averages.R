@@ -82,14 +82,13 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
     )
   
   df_rcv <- df %>% filter(ranked_choice_reallocated == TRUE)
-  
-  df_fptp <- df %>% filter(ranked_choice_reallocated == FALSE)
-  
   df_rcv <- df_rcv %>% ## Handling RCV polls
     arrange(desc(ranked_choice_round)) %>%
     distinct(poll_id, .keep_all = TRUE)
   
-  df <- bind_rows(df_fptp, df_rcv)
+  df_fptp <- df %>% filter(ranked_choice_reallocated == FALSE)
+  
+  df <- df_fptp
   
   df <- df %>% mutate(
     start_date = mdy(start_date),
@@ -148,7 +147,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   ### Quality weights
   df <- df %>%
     mutate(
-      pollscore = coalesce(pollscore, 5),
+      pollscore = coalesce(pollscore, 2),
       # quality_weight = if_else(predictive_plus_minus < 0.5, exp(-predictive_plus_minus/1.3), 0.2)
       quality_weight = if_else(pollscore <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
     )
@@ -174,8 +173,16 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
     partisan_downweight = if_else(is.na(partisan), 1, partisan_dw)
   )
   
+  ## Internal downweight
+  internal_dw <- 0.5 / 0.8
+  df <- df %>% mutate(
+    internal_downweight = if_else(internal == TRUE, internal_dw, 1)
+  ) %>% mutate(
+    internal_downweight = replace_na(1)
+  )
+  
   ### Bring it all together
-  df <- df %>% mutate(total_weight = sample_size_weight * quality_weight * recency_weight * partisan_downweight)
+  df <- df %>% mutate(total_weight = sample_size_weight * quality_weight * recency_weight * partisan_downweight * internal_downweight)
   df$total_weight <- df$total_weight / sum(df$total_weight)
   
   return(df)
@@ -189,14 +196,19 @@ avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
   lower_ci <- avg - 1.96*std
   upper_ci <- avg + 1.96*std
   
+  df_weights <- df_weights %>% mutate(
+    effn = -0.3*pollscore + 1
+  ) # Measure of "effective" number of polls
+  
   return(c("avg" = avg, 
            "std" = std, 
            "lower_ci" = lower_ci, 
-           "upper_ci" = upper_ci))
+           "upper_ci" = upper_ci,
+           "effn" = sum(df_weights$effn)))
 }
 
 unique_cands <- unique(
-  polls %>% select(cycle, state, seat_number, candidate_name)
+  polls %>% select(cycle, state, seat_number, candidate_name, party)
   )
 
 cand_averages <- unique_cands %>% mutate(
