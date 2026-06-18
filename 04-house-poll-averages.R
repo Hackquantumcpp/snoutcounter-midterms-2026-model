@@ -2,6 +2,7 @@ library(tidyverse)
 library(janitor)
 library(rstan)
 library(rstanarm)
+library(DescTools)
 
 banned_pollsters <- c("ActiVote",
                       "Trafalgar Group", 
@@ -20,12 +21,18 @@ polls <- polls %>% filter(!(display_name %in% banned_pollsters)) %>%
 polls <- polls %>% filter(
   party %in% c("DEM", "REP") | answer == "Mund" # 2022 North Dakota House
 )
+
+polls <- polls %>% filter(
+  is.na(population) == FALSE,
+  is.na(end_date) == FALSE
+)
+
 tracking_polls_pipeline <- function(data_frame, cycle, state,
                                     seat_number, candidate) {
-  df <- data_frame %>% filter(cycle == cycle &&
-                                state == state &&
-                                seat_number == seat_number &&
-                                candidate_name == candidate &&
+  df <- data_frame %>% filter(cycle == .env$cycle,
+                                state == .env$state,
+                                seat_number == .env$seat_number,
+                                candidate_name == candidate,
                                 tracking == TRUE)
   pollsters <- as.vector(df %>% distinct(pollster))$pollster
   
@@ -63,9 +70,9 @@ tracking_polls_pipeline <- function(data_frame, cycle, state,
 poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   # Copy data frame, filter for all those less than given date
   df_og <- data_frame
-  df <- df_og %>% filter(cycle == cycle &&
-                           state == state &&
-                           seat_number &&
+  df <- df_og %>% filter(cycle == .env$cycle,
+                           state == .env$state,
+                           seat_number == .env$seat_number,
                            candidate_name == candidate)
   
   # Wrangling
@@ -73,6 +80,22 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
     rename(mode = methodology) %>% mutate(
       mode = replace_na(mode, "Unknown")
     )
+  
+  df_rcv <- df %>% filter(ranked_choice_reallocated == TRUE)
+  
+  df_fptp <- df %>% filter(ranked_choice_reallocated == FALSE)
+  
+  df_rcv <- df_rcv %>% ## Handling RCV polls
+    arrange(desc(ranked_choice_round)) %>%
+    distinct(poll_id, .keep_all = TRUE)
+  
+  df <- bind_rows(df_fptp, df_rcv)
+  
+  df <- df %>% mutate(
+    start_date = mdy(start_date),
+    end_date = mdy(end_date),
+    election_date = mdy(election_date)
+  )
 
   df <- df %>%
     mutate(population = recode(population, "LV" = "b", "RV" = "c", "A" = "e")) %>% 
@@ -86,8 +109,8 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   
   impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode) {
     df <- data_frame # Copy data frame
-    df_pollst <- df %>% filter(pollster == pollster)
-    df_mode <- df %>% filter(mode == mode)
+    df_pollst <- df %>% filter(pollster == .env$pollster)
+    df_mode <- df %>% filter(mode == .env$mode)
     
     if (nrow(df_pollst) != 0) {
       return(median(df_pollst$sample_size))
@@ -105,18 +128,20 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   }
   
   impute_sample_size_dfnullsampsize <- function(pollster, mode) {
-    return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsampesize, pollster, mode))
+    return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsamplesize, pollster, mode))
   }
   
   df <- df %>% filter(is.na(sample_size) == FALSE)
   df <- df %>% mutate(sample_size_winsr = pmin(sample_size, size_cap))
   df <- df %>% mutate(sample_size_winsr = Winsorize(sample_size_winsr, val = quantile(sample_size_winsr, probs = c(0.025, 0.975), na.rm = FALSE)))
   
-  df_nullsampsize <- df_nullsampsize %>% rowwise() %>%
-    mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode)) %>%
-    ungroup()
-  
-  df <- bind_rows(df, df_nullsampsize)
+  if (dim(df_nullsampsize)[1] != 0) {
+    df_nullsampsize <- df_nullsampsize %>% rowwise() %>%
+      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode)) %>%
+      ungroup()
+    
+    df <- bind_rows(df, df_nullsampsize)
+  }
   
   df <- df %>% mutate(sample_size_weight = sqrt(pmin(sample_size_winsr, size_cap)) / sqrt(median(pmin(sample_size_winsr, size_cap))))
   
@@ -141,7 +166,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   
   ### Recency weight
   window <- 30
-  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(date - end_date, units = "days")/window))
+  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(election_date - end_date, units = "days")/window))
   
   ## Partisan downweight
   partisan_dw <- 0.8
@@ -150,7 +175,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   )
   
   ### Bring it all together
-  df <- df %>% mutate(total_weight = sample_size_weight * quality_weight * zone_flood_weight * recency_weight * partisan_downweight)
+  df <- df %>% mutate(total_weight = sample_size_weight * quality_weight * recency_weight * partisan_downweight)
   df$total_weight <- df$total_weight / sum(df$total_weight)
   
   return(df)
@@ -174,5 +199,9 @@ unique_cands <- unique(
   polls %>% select(cycle, state, seat_number, candidate_name)
   )
 
-
+cand_averages <- unique_cands %>% mutate(
+  output = pmap(list(cycle, state, seat_number, candidate_name), function(cycle, state, seat_number, candidate_name) {
+    return (avg_final(polls, cycle, state, seat_number, candidate_name))
+  })
+) %>% unnest_wider(output)
                           
