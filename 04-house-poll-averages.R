@@ -204,4 +204,5 @@ cand_averages <- unique_cands %>% mutate(
     return (avg_final(polls, cycle, state, seat_number, candidate_name))
   })
 ) %>% unnest_wider(output)
-                          
+
+write_csv(cand_averages, "transformed/house_polling_averages.csv")
