@@ -171,7 +171,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   ## Partisan downweight
   partisan_dw <- 0.8
   df <- df %>% mutate(
-    partisan_downweight = if_else(partisan == "NA", 1, partisan_dw)
+    partisan_downweight = if_else(is.na(partisan), 1, partisan_dw)
   )
   
   ### Bring it all together
