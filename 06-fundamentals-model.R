@@ -24,7 +24,7 @@ test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
 fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                     cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_asn_pct +
+                     cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
                      (1 | state:year) + sqrt_effn:poll_margin,
                    family = gaussian(),
@@ -52,13 +52,13 @@ neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                          "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
-                         "cvap_black_pct", "cvap_asn_pct",
+                         "cvap_black_pct", "cvap_aapi_pct",
                          "sqrt_effn:poll_margin"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
-                   "cvap_black_pct", "cvap_asn_pct",
+                   "cvap_black_pct", "cvap_aapi_pct",
                    "sqrt_effn:poll_margin"))
 neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
@@ -112,7 +112,7 @@ data_24 <- data %>% filter(year == 2024)
 
 backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                                        cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_asn_pct +
+                                        cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_aapi_pct +
                                        (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
                                 (1 | state:year) + sqrt_effn:poll_margin,
                                      family = gaussian(),
@@ -130,23 +130,23 @@ print(ranef(backtest_model))
 mcmc_trace(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy"))
 mcmc_trace(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
-                                    "cvap_black_pct", "cvap_asn_pct"))
+                                    "cvap_black_pct", "cvap_aapi_pct"))
 mcmc_dens_overlay(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                            "dem_inc_dummy", "rep_inc_dummy"))
 mcmc_dens_overlay(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
-                                           "cvap_black_pct", "cvap_asn_pct"))
+                                           "cvap_black_pct", "cvap_aapi_pct"))
 mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
 mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
 neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy",
                                     "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", 
                                     "cvap_white_pct",
-                                    "cvap_black_pct", "cvap_asn_pct",
+                                    "cvap_black_pct", "cvap_aapi_pct",
                                     "sqrt_effn:poll_margin"))
 rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
                               "dem_inc_dummy", "rep_inc_dummy",
                               "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", "cvap_white_pct",
-                              "cvap_black_pct", "cvap_asn_pct", "sqrt_effn:poll_margin"))
+                              "cvap_black_pct", "cvap_aapi_pct", "sqrt_effn:poll_margin"))
 neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
@@ -221,7 +221,7 @@ data_18 <- data %>% filter(year == 2018)
 
 backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                 dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                                cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_asn_pct +
+                                cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_aapi_pct +
                                 (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
                                 (1 | state:year) + (sqrt_effn:poll_margin),
                               family = gaussian(),
@@ -239,22 +239,22 @@ print(ranef(backtest_model))
 mcmc_trace(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy"))
 mcmc_trace(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
-                                    "cvap_black_pct", "cvap_asn_pct"))
+                                    "cvap_black_pct", "cvap_aapi_pct"))
 mcmc_dens_overlay(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                            "dem_inc_dummy", "rep_inc_dummy"))
 mcmc_dens_overlay(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
-                                           "cvap_black_pct", "cvap_asn_pct"))
+                                           "cvap_black_pct", "cvap_aapi_pct"))
 mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
 mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
 neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy",
                                     "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", 
                                     "cvap_white_pct",
-                                    "cvap_black_pct", "cvap_asn_pct"))
+                                    "cvap_black_pct", "cvap_aapi_pct"))
 rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
                               "dem_inc_dummy", "rep_inc_dummy",
                               "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", "cvap_white_pct",
-                              "cvap_black_pct", "cvap_asn_pct"))
+                              "cvap_black_pct", "cvap_aapi_pct"))
 neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
