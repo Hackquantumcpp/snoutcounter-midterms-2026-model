@@ -147,7 +147,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   ### Quality weights
   df <- df %>%
     mutate(
-      pollscore = coalesce(pollscore, 2),
+      pollscore = coalesce(pollscore, 1),
       # quality_weight = if_else(predictive_plus_minus < 0.5, exp(-predictive_plus_minus/1.3), 0.2)
       quality_weight = if_else(pollscore <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
     )
