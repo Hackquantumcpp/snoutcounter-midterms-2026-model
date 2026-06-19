@@ -31,7 +31,7 @@ fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                    data = train_data,
                    prior = normal(0, 2.5, autoscale = TRUE),
                    adapt_delta = 0.99,
-                   refresh = 100,
+                   refresh = 10,
                    iter = 5000*2,
                    seed = 1010
 )
