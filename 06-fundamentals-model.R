@@ -26,7 +26,7 @@ fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
-                     (1 | state:year) + sqrt_effn:poll_margin,
+                     (1 | state:year) + sqrt_effn:poll_margin + college,
                    family = gaussian(),
                    data = train_data,
                    prior = normal(0, 2.5, autoscale = TRUE),
