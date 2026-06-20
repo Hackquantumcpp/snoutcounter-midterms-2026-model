@@ -13,7 +13,7 @@ data <- data %>% mutate(
   dem_funds_2p_pct_sqrd = dem_funds_2p_pct**2,
   effn = pmax(dem_effn, rep_effn),
   sqrt_effn = sqrt(effn),
-  poll_margin = dem_poll_avg - rep_poll_avg
+  poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
 )
 
 set.seed(2026)
