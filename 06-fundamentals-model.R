@@ -53,13 +53,13 @@ neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
-                         "sqrt_effn:poll_margin"))
+                         "sqrt_effn:poll_margin", "college"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",
-                   "sqrt_effn:poll_margin"))
+                   "sqrt_effn:poll_margin", "college"))
 neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
@@ -79,6 +79,8 @@ pp_check(fit, nreps = 100)
 
 y_hat_mean <- colMeans(y_hat)
 
+y_hat_sd <- colSds(y_hat)
+
 y_act = test_data$dem_pct_2p
 
 mae <- mean(abs(y_hat_mean - y_act))
@@ -89,11 +91,14 @@ fund_chances <- apply(y_hat, 2, \(x) mean(x > 50) * 100)
 
 test_data <- test_data %>% mutate(
   y_pred = y_hat_mean,
-  y_act = dem_pct_2p
+  y_act = dem_pct_2p,
+  poster_sd = y_hat_sd
 ) %>% mutate(
   abs_err = abs(y_pred - y_act),
   err = y_pred - y_act,
   fund_chances = fund_chances
+) %>% mutate(
+  z = err / poster_sd
 )
 
 ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
@@ -112,9 +117,9 @@ data_24 <- data %>% filter(year == 2024)
 
 backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                                        cvap_hisp_pct + cvap_white_pct + cvap_black_pct + cvap_aapi_pct +
+                                        cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                                        (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
-                                (1 | state:year) + sqrt_effn:poll_margin,
+                                (1 | state:year) + sqrt_effn:poll_margin + college,
                                      family = gaussian(),
                                      data = pre24,
                                      prior = normal(0, 2.5, autoscale = TRUE),
@@ -142,11 +147,12 @@ neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", 
                                     "cvap_white_pct",
                                     "cvap_black_pct", "cvap_aapi_pct",
-                                    "sqrt_effn:poll_margin"))
+                                    "sqrt_effn:poll_margin", "college"))
 rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
                               "dem_inc_dummy", "rep_inc_dummy",
                               "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", "cvap_white_pct",
-                              "cvap_black_pct", "cvap_aapi_pct", "sqrt_effn:poll_margin"))
+                              "cvap_black_pct", "cvap_aapi_pct", "sqrt_effn:poll_margin",
+                              "college"))
 neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
