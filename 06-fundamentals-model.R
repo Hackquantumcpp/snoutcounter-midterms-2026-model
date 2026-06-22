@@ -22,10 +22,10 @@ train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
-fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
+fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg + (generic_ballot_avg | state) +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
-                     (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
+                     (1 | dem_cand) + (1 | rep_cand) + (1 | year) + #+ (1 | state)
                      (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + college +
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
@@ -113,6 +113,7 @@ ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
     title = "Predicted vs actual"
   ) + xlim(40, 60) + ylim(35, 65)
 
+# loo_intsloeps <- loo(fit)
 
 # Backtesting (2024)
 
