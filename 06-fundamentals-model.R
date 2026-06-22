@@ -26,7 +26,8 @@ fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
-                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + college,
+                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + college +
+                     dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = train_data,
                    prior = normal(0, 2.5, autoscale = TRUE),
@@ -53,23 +54,27 @@ neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
-                         "sqrt_effn:poll_margin", "college"))
+                         "sqrt_effn:poll_margin", "college",
+                         "dem_scandal_score", "rep_scandal_score"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",
-                   "sqrt_effn:poll_margin", "college"))
+                   "sqrt_effn:poll_margin", "college",
+                   "dem_scandal_score", "rep_scandal_score"))
 neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
-                                    "Sigma[state:(Intercept),(Intercept)]"))
+                                    "Sigma[state:(Intercept),(Intercept)]",
+                         "Sigma[census_region:(Intercept),(Intercept)]"))
 rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                               "Sigma[rep_cand:(Intercept),(Intercept)]",
                               "Sigma[year:(Intercept),(Intercept)]",
                               "Sigma[state:year:(Intercept),(Intercept)]",
-                              "Sigma[state:(Intercept),(Intercept)]"))
+                              "Sigma[state:(Intercept),(Intercept)]",
+                   "Sigma[census_region:(Intercept),(Intercept)]"))
 
 # Validation
 
@@ -119,7 +124,8 @@ backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                                         cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                                        (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
-                                (1 | state:year) + sqrt_effn:poll_margin + college,
+                                (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + college +
+                                dem_scandal_score + rep_scandal_score,
                                      family = gaussian(),
                                      data = pre24,
                                      prior = normal(0, 2.5, autoscale = TRUE),
@@ -147,22 +153,25 @@ neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", 
                                     "cvap_white_pct",
                                     "cvap_black_pct", "cvap_aapi_pct",
-                                    "sqrt_effn:poll_margin", "college"))
+                                    "sqrt_effn:poll_margin", "college",
+                                    "dem_scandal_score", "rep_scandal_score"))
 rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
                               "dem_inc_dummy", "rep_inc_dummy",
                               "dem_funds_2p_pct_sqrd", "cvap_hisp_pct", "cvap_white_pct",
                               "cvap_black_pct", "cvap_aapi_pct", "sqrt_effn:poll_margin",
-                              "college"))
+                              "college", "dem_scandal_score", "rep_scandal_score"))
 neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
-                                    "Sigma[state:(Intercept),(Intercept)]"))
+                                    "Sigma[state:(Intercept),(Intercept)]",
+                                    "Sigma[census_region:(Intercept),(Intercept)]"))
 rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
-                                    "Sigma[state:(Intercept),(Intercept)]"))
+                                    "Sigma[state:(Intercept),(Intercept)]",
+                              "Sigma[census_region:(Intercept),(Intercept)]"))
 
 poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
 
