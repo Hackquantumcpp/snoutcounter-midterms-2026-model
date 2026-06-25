@@ -38,6 +38,10 @@ fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg + (generic_ballot_avg |
 )
 print(fit)
 
+## Tested random slopes + intercepts model
+## Little change to accuracy, but matters a lot in some districts
+## Tentative decision: keep
+
 # Diagnostics
 mcmc_trace(fit, pars = c("pvi", "dem_inc_dummy",
                          "rep_inc_dummy"))
@@ -121,10 +125,10 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
+backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg + (generic_ballot_avg | state) +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                                         cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
-                                       (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | year) +
+                                       (1 | dem_cand) + (1 | rep_cand) + (1 | year) +
                                 (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + college +
                                 dem_scandal_score + rep_scandal_score,
                                      family = gaussian(),
