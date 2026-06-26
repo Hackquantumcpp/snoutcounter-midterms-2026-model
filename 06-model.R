@@ -72,4 +72,4 @@ rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                    "Sigma[state:(Intercept),(Intercept)]",
                    "Sigma[census_region:(Intercept),(Intercept)]"))
 
-saveRDS(fit, "house_model.RDS")
+saveRDS(fit, "model/house_model.RDS")
