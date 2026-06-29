@@ -231,7 +231,7 @@ View(data_24 %>% filter((y_act < 55 & y_act > 45) | (y_pred < 55 & y_pred > 45))
 
 data_24 <- data_24 %>% mutate(district_id = str_remove_all(district, "-"))
 
-write_csv(data_24 %>% select(-sims), "backtesting_res_fundamentals_2024.csv")
+write_csv(data_24 %>% select(-sims), "backtesting/backtesting_res_fundamentals_2024.csv")
 
 # Backtesting (2018)
 
@@ -320,4 +320,4 @@ ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
 
 data_18 <- data_18 %>% mutate(district_id = str_remove_all(district, "-"))
 
-write_csv(data_18, "backtesting_res_fundamentals_2018.csv")
+write_csv(data_18, "backtesting/backtesting_res_fundamentals_2018.csv")

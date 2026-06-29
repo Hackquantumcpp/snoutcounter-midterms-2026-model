@@ -1,0 +1,436 @@
+,cd,dem_cand,rep_cand,dem_inc_any,rep_inc_any
+0,AK-AL,,Nick Begich,False,True
+1,AL-01,Clyde Jones Jr.,Jerry Carl,False,False
+2,AL-02,Shomari Figures,Hampton Harris,True,False
+3,AL-03,Lee McInnis,Mike Rogers,False,True
+4,AL-04,Amanda Pusczek,Robert Aderholt,False,True
+5,AL-05,Andrew Sneed,Dale Strong,False,True
+6,AL-06,Keith Pilkington,Gary Palmer,False,True
+7,AL-07,Terri Sewell,Not Contested,True,False
+8,AR-01,Terri Green,Rick Crawford,False,False
+9,AR-02,Chris Jones,French Hill,False,True
+10,AR-03,Robb Ryerse,Steve Womack,True,False
+11,AR-04,James Russell,Bruce Westerman,True,False
+12,AZ-01,,,False,False
+13,AZ-02,Jonathan Nez,Elijah Crane,False,True
+14,AZ-03,Yassamin Ansari,,True,False
+15,AZ-04,Greg Stanton,Zuhdi Jasser,False,True
+16,AZ-05,,,False,True
+17,AZ-06,JoAnna Mendoza,Juan Ciscomani,False,True
+18,AZ-07,Adelita Grijalva,Daniel Butierez,False,True
+19,AZ-08,,Abraham Hamadeh,False,True
+20,AZ-09,Dani Sterbinsky,Paul Gosar,False,True
+21,CA-01,Mike McGuire,James Gallagher,False,True
+22,CA-02,Jared Huffman,Robin Littau,True,False
+23,CA-03,Ami Bera,Robb Tucker,True,False
+24,CA-04,Mike Thompson/Eric Jones,Not Contested,True,False
+25,CA-05,Michael Masuda,Tom McClintock,False,True
+26,CA-06,Richard Pan,Kevin Kiley,False,True
+27,CA-07,Doris Matsui/Mai Vang,Not Contested,True,False
+28,CA-08,John Garamendi,Rudy Recile,True,False
+29,CA-09,Josh Harder,John McBride,True,False
+30,CA-10,Mark DeSaulnier,Jeff Frese,True,False
+31,CA-11,Scott Weiner/Connie Chan,Not Contested,False,False
+32,CA-12,Lateefah Simon,Not Contested,True,False
+33,CA-13,Adam Gray,Kevin Lincoln,True,False
+34,CA-14,Aisha Wahab/Melissa Hernandez,Not Contested,False,False
+35,CA-15,Kevin Mullin,Charles Hoelter,True,False
+36,CA-16,Sam Liccardo,Peter Soule,True,False
+37,CA-17,Ro Khanna,Ritesh Tandon,True,False
+38,CA-18,Zoe Lofgren,Shane Lewis,True,False
+39,CA-19,Jimmy Panetta,Peter Coe Verbica,True,False
+40,CA-20,Sandra Van Scotter,Vince Fong,False,True
+41,CA-21,Jim Costa,Kyle Kirkland,True,False
+42,CA-22,Randy Villegas,David Valadao,False,True
+43,CA-23,Tessa Lynn Hodge,Jay Obernolte,False,True
+44,CA-24,Salud Carbajal,Bob Smith,True,False
+45,CA-25,Raul Ruiz,Joe Males,True,False
+46,CA-26,Jacqui Irwin,Sam Gallucci,False,False
+47,CA-27,George Whitesides,Jason Gibbs,True,False
+48,CA-28,Judy Chu,April A. Verlato,True,False
+49,CA-29,Luz Rivas/Angélica María Dueñas,Not Contested,True,False
+50,CA-30,Laura Friedman,Scott Alan Meyers,True,False
+51,CA-31,Gil Cisneros,Eric Ching,True,False
+52,CA-32,Brad Sherman,Larry Thompson,True,False
+53,CA-33,Pete Aguilar,Stephanie M. Vargas,True,False
+54,CA-34,Jimmy Gomez/Angela Gonzales-Torres,Not Contested,True,False
+55,CA-35,Norma Torres,Mike Cargile,True,False
+56,CA-36,Ted Lieu,Houston Brignano,True,False
+57,CA-37,Sydney Kamlager-Dove/Samantha Mota,Not Contested,True,False
+58,CA-38,Hilda Solis,Pedro Antonio Casas,False,False
+59,CA-39,Mark Takano,Steve Manos,True,False
+60,CA-40,Not Contested,Young Kim/Ken Calvert,False,True
+61,CA-41,Linda Sanchez,Mitch Clemmons,True,False
+62,CA-42,Robert Garcia,Brian Burley,True,False
+63,CA-43,Maxine Waters,Cristian Morales,True,False
+64,CA-44,Nanette Barragan,Genevieve Angel,True,False
+65,CA-45,Derek Tran,Chuong V. Vo,True,False
+66,CA-46,Lou Correa,David Pan,True,False
+67,CA-47,Dave Min,Jenny Rae Le Roux,True,False
+68,CA-48,Marni von Wilpert,Jim Desmond,False,False
+69,CA-49,Mike Levin,Armen Kurdian,True,False
+70,CA-50,Scott Peters,Steve Cohen,True,False
+71,CA-51,Sara Jacobs,Ricardo Cabrera,True,False
+72,CA-52,Juan Vargas,Jeff Belle,True,False
+73,CO-01,Diana DeGette,,True,False
+74,CO-02,Joe Neguse,,True,False
+75,CO-03,,Jeff Hurd,False,True
+76,CO-04,Eileen Laubacher,Lauren Boebert,False,True
+77,CO-05,,Jeff Crank,False,True
+78,CO-06,Jason Crow,Mel Tewahade,True,False
+79,CO-07,Brittany Pettersen,Tim Bennett,True,False
+80,CO-08,,Gabe Evans,False,True
+81,CT-01,John Larson,,True,False
+82,CT-02,Joe Courtney,,True,False
+83,CT-03,Rosa DeLauro,Christopher Lancia,True,False
+84,CT-04,Jim Himes,,True,False
+85,CT-05,Jahana Hayes,,True,False
+86,DE-AL,Sarah McBride,,True,False
+87,FL-01,,Jimmy Patronis,False,True
+88,FL-02,,,False,False
+89,FL-03,Seth Harp,Kat Cammack,False,True
+90,FL-04,,Aaron Bean,False,True
+91,FL-05,Rachel Grage,John Rutherford,False,True
+92,FL-06,,Randy Fine,False,True
+93,FL-07,,Cory Mills,False,True
+94,FL-08,,Mike Haridopolos,False,True
+95,FL-09,Darren Soto,,True,False
+96,FL-10,Maxwell Frost,Not Contested,True,False
+97,FL-11,,,False,False
+98,FL-12,,Gus Bilirakis,False,True
+99,FL-13,,Anna Paulina Luna,False,True
+100,FL-14,Kathy Castor,,True,False
+101,FL-15,,Laurel Lee,False,True
+102,FL-16,,,False,False
+103,FL-17,,Greg Steube,False,True
+104,FL-18,,Scott Franklin,False,True
+105,FL-19,,,False,False
+106,FL-20,Debbie Wasserman Schultz,,True,False
+107,FL-21,,Brian Mast,False,True
+108,FL-22,,,False,False
+109,FL-23,Lois Frankel,,True,False
+110,FL-24,,,False,False
+111,FL-25,Jared Moskowitz,,True,False
+112,FL-26,,Mario Diaz-Balart,False,True
+113,FL-27,,Maria Elvira Salazar,False,True
+114,FL-28,,Carlos Gimenez,False,True
+115,GA-01,Amanda Hollowell,Jim Kingston,False,False
+116,GA-02,Sanford Bishop,Matt Day,True,False
+117,GA-03,Maura Keller,Brian Jack,False,True
+118,GA-04,Hank Johnson,James Duffie,True,False
+119,GA-05,Nikema Williams,John Oscar Salvesen,True,False
+120,GA-06,Lucy McBath,Kevin Martin,True,False
+121,GA-07,Tony Kozycki,Rich McCormick,False,True
+122,GA-08,Kelly Esti,Austin Scott,False,True
+123,GA-09,Caitlyn Gegen,Andrew Clyde,False,True
+124,GA-10,Pamela Delancy,Houston Gaines,False,False
+125,GA-11,Chris Harden,John Cowan,False,False
+126,GA-12,Ceretta Smith,Rick Allen,False,True
+127,GA-13,Jasmine Clark,Jonathan Chavez,False,False
+128,GA-14,Shawn Harris,Clay Fuller,False,True
+129,HI-01,Ed Case,Adriel Lam,True,False
+130,HI-02,Jill Tokuda,Brenton Awa,True,False
+131,IA-01,Christina Bohannan,Mariannette Miller-Meeks,False,True
+132,IA-02,Lindsay James,Joe Mitchell,False,False
+133,IA-03,Sarah Trone Garriott,Zach Nunn,False,True
+134,IA-04,Dave Dawson,Chris McGowan,False,False
+135,ID-01,Kaylee Peterson,Russ Fulcher,False,True
+136,ID-02,Ellie Gilbreath,Mike Simpson,False,True
+137,IL-01,Jonathan Jackson,Christian Maxwell,True,False
+138,IL-02,Donna Miller,Michael Noack,False,False
+139,IL-03,Delia Ramirez,Angel Oakley,True,False
+140,IL-04,Patty Garcia,Lupe Castillo,False,False
+141,IL-05,Mike Quigley,Tommy Hanson,True,False
+142,IL-06,Sean Casten,Niki Conforti,True,False
+143,IL-07,La Shawn Ford,Chad Koppie,False,False
+144,IL-08,Melissa Bean,Jennifer Davis,False,False
+145,IL-09,Daniel Biss,John Elleson,False,False
+146,IL-10,Brad Schneider,Carl Lambrecht,True,False
+147,IL-11,Bill Foster,Jeff Walter,True,False
+148,IL-12,Julie Fortier,Mike Bost,False,True
+149,IL-13,Nikki Budzinski,Jeff Wilson,True,False
+150,IL-14,Lauren Underwood,James Marter,True,False
+151,IL-15,Jennifer Todd,Mary Miller,False,True
+152,IL-16,Paul Nolley,Darin LaHood,False,True
+153,IL-17,Eric Sorensen,Dillan Vancil,True,False
+154,IN-01,Frank Mrvan,Barb Regnitz,True,False
+155,IN-02,Jamee Decio,Rudy Yakym,False,True
+156,IN-03,Kelly Thompson,Marlin Stutzman,False,True
+157,IN-04,Drew Cox,Jim Baird,False,True
+158,IN-05,J.D. Ford,Victoria Spartz,False,True
+159,IN-06,Cinde Wirth,Jefferson Shreve,False,True
+160,IN-07,Andre Carson,Patrick McAuley,True,False
+161,IN-08,Mary Allen,Mark Messmer,False,True
+162,IN-09,Brad Meyer,Erin Houchin,False,True
+163,KS-01,,Tracey Mann,False,True
+164,KS-02,,Derek Schmidt,False,True
+165,KS-03,Sharice Davids,Chase LaPorte,True,False
+166,KS-04,,Ron Estes,False,True
+167,KY-01,Drew Williams,James Comer,False,True
+168,KY-02,Megan Wingfield,Brett Guthrie,False,True
+169,KY-03,Morgan McGarvey,Maria Rodriguez,True,False
+170,KY-04,Melissa Strange,Ed Gallrein,False,False
+171,KY-05,Ned Pillersdorf,Hal Rogers,False,True
+172,KY-06,Zach Dembo,Ralph Alvarado,False,False
+173,LA-01,Lauren Jewett,Steve Scalise,False,True
+174,LA-02,Troy Carter,,True,False
+175,LA-03,,Clay Higgins,False,True
+176,LA-04,,Mike Johnson,False,True
+177,LA-05,,,False,False
+178,LA-06,Cleo Fields,,True,False
+179,MA-01,Richard Neal,,True,False
+180,MA-02,Jim McGovern,,True,False
+181,MA-03,Lori Trahan,Gary Grossi,True,False
+182,MA-04,Jake Auchincloss,Tom Stalcup,True,False
+183,MA-05,Katherine Clark,,True,False
+184,MA-06,,Micah Jones,False,False
+185,MA-07,Ayanna Pressley,,True,False
+186,MA-08,Stephen Lynch,,True,False
+187,MA-09,Bill Keating,Tyler MacAllister,True,False
+188,MD-01,Dan Schwartz,Andy Harris,False,True
+189,MD-02,Johnny Olszewski,Dave Wallace,True,False
+190,MD-03,Sarah Elfreth,Berney Flowers,True,False
+191,MD-04,Glenn Ivey,George McDermott,True,False
+192,MD-05,Adrian Boafo,Chris Chaffee,False,False
+193,MD-06,April McClain Delaney,Robin Ficker,True,False
+194,MD-07,Kweisi Mfume,Scott Collier,True,False
+195,MD-08,Jamie Raskin,Cheryl Riley,True,False
+196,ME-01,Chellie Pingree,,True,False
+197,ME-02,Matt Dunlap,Paul LePage,False,False
+198,MI-01,,Jack Bergman,False,True
+199,MI-02,,John Moolenaar,False,True
+200,MI-03,Hillary Scholten,,True,False
+201,MI-04,,Bill Huizenga,False,True
+202,MI-05,Christian Vukasovich,Tim Walberg,False,True
+203,MI-06,Debbie Dingell,Heather Smiley,True,False
+204,MI-07,,Tom Barrett,False,True
+205,MI-08,Kristen McDonald Rivet,,True,False
+206,MI-09,,Lisa McClain,False,True
+207,MI-10,,,False,False
+208,MI-11,,,False,False
+209,MI-12,Rashida Tlaib,,True,False
+210,MI-13,Shri Thanedar,,True,False
+211,MN-01,Jake Johnson,Brad Finstad,False,True
+212,MN-02,,Eric Pratt,False,False
+213,MN-03,Kelly Morrison,,True,False
+214,MN-04,Betty McCollum,,True,False
+215,MN-05,Ilhan Omar,,True,False
+216,MN-06,,Tom Emmer,False,True
+217,MN-07,,Michelle Fischbach,False,True
+218,MN-08,,Pete Stauber,False,True
+219,MO-01,Wesley Bell,,True,False
+220,MO-02,,Ann Wagner,False,True
+221,MO-03,,Bob Onder,False,True
+222,MO-04,,Mark Alford,False,True
+223,MO-05,Emanuel Cleaver,,True,False
+224,MO-06,,,False,False
+225,MO-07,Missi Hesketh,Eric Burlison,False,True
+226,MO-08,,Jason Smith,False,True
+227,MS-01,Cliff Johnson,Trent Kelly,False,True
+228,MS-02,Bennie Thompson,Ron Eller,True,False
+229,MS-03,Michael Chiaradio,Michael Guest,False,True
+230,MS-04,Jeffrey Hulum III,Mike Ezell,False,True
+231,MT-01,Sam Forstag,Aaron Flint,False,False
+232,MT-02,Brian Miller,Troy Downing,False,True
+233,NC-01,Don Davis,Laurie Buckhout,True,False
+234,NC-02,Deborah Ross,Eugene Douglass,True,False
+235,NC-03,Raymond Smith Jr.,Greg Murphy,False,True
+236,NC-04,Valerie Foushee,Max Ganorkar,True,False
+237,NC-05,Chuck Hubbard,Virginia Foxx,False,True
+238,NC-06,Cyril Jefferson,Addison McDowell,False,True
+239,NC-07,Kimberly Hardy,David Rouzer,False,True
+240,NC-08,Colby Watson,Mark Harris,False,True
+241,NC-09,Richard Ojeda,Richard Hudson,False,True
+242,NC-10,Ashley Bell,Pat Harrigan,False,True
+243,NC-11,Jamie Ager,Chuck Edwards,False,True
+244,NC-12,Alma Adams,Jack Codiga,True,False
+245,NC-13,Paul Barringer,Brad Knott,False,True
+246,NC-14,Lakesha Womack,Tim Moore,False,True
+247,ND-AL,Trygve Hammer,Julie Fedorchak,False,True
+248,NE-01,Chris Backemeyer,Mike Flood,False,True
+249,NE-02,Denise Powell,Brinker Harding,False,False
+250,NE-03,Becky Stille,Adrian Smith,False,True
+251,NH-01,,,False,False
+252,NH-02,Maggie Goodlander,Lily Tang Williams,True,False
+253,NJ-01,Donald Norcross,Damon Galdo,True,False
+254,NJ-02,Zack Mullock,Jeff Van Drew,False,True
+255,NJ-03,Herb Conaway,Michael McGuire,True,False
+256,NJ-04,Rachel Peace,Chris Smith,False,True
+257,NJ-05,Josh Gottheimer,Sean Kirrane,True,False
+258,NJ-06,Frank Pallone,Hillary Herzig,True,False
+259,NJ-07,Rebecca Bennett,Tom Kean,False,True
+260,NJ-08,Rob Menendez,,True,False
+261,NJ-09,Nellie Pou,Rosie Pino,True,False
+262,NJ-10,LaMonica McIver,Carmen Bucco,True,False
+263,NJ-11,Analilia Mejia,Joe Hathaway,True,False
+264,NJ-12,Adam Hamawy,Gregg Mele,False,False
+265,NM-01,Melanie Stansbury,Didi Okpareke,True,False
+266,NM-02,Gabe Vasquez,Greg Cunningham,True,False
+267,NM-03,Teresa Leger Fernandez,Martin Zamora,True,False
+268,NV-01,Dina Titus,,True,False
+269,NV-02,,,False,False
+270,NV-03,Susie Lee,,True,False
+271,NV-04,Steven Horsford,,True,False
+272,NY-01,Christopher Gallant,Nick LaLota,False,True
+273,NY-02,Patrick Halpin,Andrew Garbarino,False,True
+274,NY-03,Tom Suozzi,Michael LiPetri,True,False
+275,NY-04,Laura Gillen,Jeanine Driscoll,True,False
+276,NY-05,Greg Meeks,George Marsh,True,False
+277,NY-06,Grace Meng,Joseph Chou,True,False
+278,NY-07,Claire Valdez,Melvin Rivera,False,False
+279,NY-08,Hakeem Jeffries,Lewis Mizrahi,True,False
+280,NY-09,Yvette Clarke,Joel Anabilah-Azumah,True,False
+281,NY-10,Brad Lander,Jennifer Moore,False,False
+282,NY-11,Michael DeCillis,Nicole Malliotakis,False,True
+283,NY-12,Micah Lasher,Caroline Shinkle,False,False
+284,NY-13,Darializa Chevalier,Jomo Williams,False,False
+285,NY-14,Alexandria Ocasio-Cortez,Diamant Hysenaj,True,False
+286,NY-15,Ritchie Torres,Stylo Sapaskis,True,False
+287,NY-16,George Latimer,Joseph Cinquemani,True,False
+288,NY-17,Cait Conley,Mike Lawler,False,True
+289,NY-18,Pat Ryan,Jacqueline Auringer,True,False
+290,NY-19,Josh Riley,Pete Oberacker,True,False
+291,NY-20,Paul Tonko,Ralph Ambrosio,True,False
+292,NY-21,Blake Gendebien,Anthony Constantino,False,False
+293,NY-22,John Mannion,Kailee Buller,True,False
+294,NY-23,Aaron Gies,Nick Langworthy,False,True
+295,NY-24,Alissa Ellman,Claudia Tenney,False,True
+296,NY-25,Joseph Morelle,Virginia McIntyre,True,False
+297,NY-26,Tim Kennedy,Dennis Hannon,True,False
+298,OH-01,Greg Landsman,Eric Conroy,True,False
+299,OH-02,Jennifer Mazzuckelli,David Taylor,False,True
+300,OH-03,Joyce Beatty,Cleophus Dulaney,True,False
+301,OH-04,Joshua Kolasinski,Jim Jordan,False,True
+302,OH-05,Brian Shaver,Bob Latta,False,True
+303,OH-06,Elizabeth Kirtley,Michael Rulli,False,True
+304,OH-07,Brian Poindexter,Max Miller,False,True
+305,OH-08,Vanessa Enoch,Warren Davidson,False,True
+306,OH-09,Marcy Kaptur,Derek Merrin,True,False
+307,OH-10,Kristina Knickerbocker,Mike Turner,False,True
+308,OH-11,Shontel Brown,Mike Kirchner,True,False
+309,OH-12,Jerrad Christian,Troy Balderson,False,True
+310,OH-13,Emilia Sykes,Carey Coleman,True,False
+311,OH-14,Maria Jukic,David Joyce,False,True
+312,OH-15,Don Leonard,Mike Carey,False,True
+313,OK-01,John Croisant,Mark Tedford,False,False
+314,OK-02,Brandon Wade,Josh Brecheen,False,True
+315,OK-03,Suzie Byrd,Frank Lucas,False,True
+316,OK-04,Mitchell Jacob,Tom Cole,False,True
+317,OK-05,Jena Nelson,Stephanie Bice,False,True
+318,OR-01,Suzanne Bonamici,Barbara Kahl,True,False
+319,OR-02,Chris Beck,Cliff Bentz,False,True
+320,OR-03,Maxine Dexter,Loran Ayles,True,False
+321,OR-04,Val Hoyle,Monique DeSpain,True,False
+322,OR-05,Janelle Bynum,Patti Adair,True,False
+323,OR-06,Andrea Salinas,David Russ,True,False
+324,PA-01,Bob Harvie,Brian Fitzpatrick,False,True
+325,PA-02,Brendan Boyle,Jessica Arriaga,True,False
+326,PA-03,Chris Rabb,Not Contested,False,False
+327,PA-04,Madeleine Dean,Aurora Stuski,True,False
+328,PA-05,Mary Gay Scanlon,Nicholas Manganaro,True,False
+329,PA-06,Chrissy Houlahan,Marty Young,True,False
+330,PA-07,Bob Brooks,Ryan Mackenzie,False,True
+331,PA-08,Paige Cognetti,Rob Bresnahan,False,True
+332,PA-09,Rachel Wallace,Dan Meuser,False,True
+333,PA-10,Janelle Stelson,Scott Perry,False,True
+334,PA-11,Nancy Mannion,Lloyd Smucker,False,True
+335,PA-12,Summer Lee,James Hayes,True,False
+336,PA-13,Beth Farnham,John Joyce,False,True
+337,PA-14,Alan Bradstock,Guy Reschenthaler,False,True
+338,PA-15,Ray Bilger,Glenn Thompson,False,True
+339,PA-16,Justin Wagner,Mike Kelly,False,True
+340,PA-17,Chris Deluzio,Tony Guy,True,False
+341,RI-01,Gabe Amo,,True,False
+342,RI-02,Seth Magaziner,,True,False
+343,SC-01,Nancy Lacore,Jenny Costa Honeycutt,False,False
+344,SC-02,Zyon Khalifa,Joe Wilson,False,True
+345,SC-03,Eunice Lehmacher,Sheri Biggs,False,True
+346,SC-04,Courtney McClain,William Timmons,False,True
+347,SC-05,Mallory Dittmer,Wes Climer,False,False
+348,SC-06,Jim Clyburn,John Peterson,True,False
+349,SC-07,John Vincent,Russell Fry,False,True
+350,SD-AL,Nikki Gronli,Marty Jackley,False,False
+351,TN-01,,Diana Harshbarger,False,True
+352,TN-02,Michaela Barnett,Tim Burchett,False,True
+353,TN-03,Anna Golladay,Chuck Fleischmann,False,True
+354,TN-04,Victoria Broderick,Scott DesJarlais,False,True
+355,TN-05,,Andy Ogles,False,True
+356,TN-06,,,False,False
+357,TN-07,Joshua Sales,Matt Van Epps,False,True
+358,TN-08,,David Kustoff,False,True
+359,TN-09,Justin Pearson,,False,False
+360,TX-01,Yolanda Prince,Nathaniel Moran,False,True
+361,TX-02,Shaun Finnie,Steve Toth,False,False
+362,TX-03,Evan Hunt,Keith Self,False,True
+363,TX-04,Jason Pearce,Pat Fallon,False,True
+364,TX-05,Chelsey Hockett,Lance Gooden,False,True
+365,TX-06,Danny Minton,Jake Ellzey,False,True
+366,TX-07,Lizzie Fletcher,Alexander Hale,True,False
+367,TX-08,Laura Jones,Jessica Hart Steinmann,False,False
+368,TX-09,Leticia Gutierrez,Alex Mealer,False,False
+369,TX-10,Caitlin Rourk,Chris Gober,False,False
+370,TX-11,Claire Reynolds,August Pfluger,False,True
+371,TX-12,Angela Rodriguez,Craig Goldman,False,True
+372,TX-13,Mark Nair,Ronny Jackson,False,True
+373,TX-14,Thurman Bartie,Randy Weber,False,True
+374,TX-15,Bobby Pulido,Monica De La Cruz,False,True
+375,TX-16,Veronica Escobar,Adam Bauman,True,False
+376,TX-17,Casey Shepard,Pete Sessions,False,True
+377,TX-18,Christian Menefee,Ronald Whitfield,True,False
+378,TX-19,Kyle Rable,Tom Sell,False,False
+379,TX-20,Joaquin Castro,Edgardo Rafael Baez,True,False
+380,TX-21,Kristin Hook,Mark Teixeira,False,False
+381,TX-22,Marquette Greene-Scott,Trever Nehls,False,False
+382,TX-23,Katy Padilla Stout,Brandon Herrera,False,False
+383,TX-24,Kevin Burge,Beth Van Duyne,False,True
+384,TX-25,Dione Sims,Roger Williams,False,True
+385,TX-26,Steven Shook,Brandon Gill,False,True
+386,TX-27,Tanya Lloyd,Michael Cloud,False,True
+387,TX-28,Henry Cuellar,Tano Tijerina,True,False
+388,TX-29,Sylvia Garcia,Martha Fierro,True,False
+389,TX-30,Frederick Haynes III,Everett Jackson,False,False
+390,TX-31,Justin Early,John Carter,False,True
+391,TX-32,Dan Barros,Jace Yarbrough,False,False
+392,TX-33,Colin Allred,Patrick Gillespie,True,False
+393,TX-34,Vicente Gonzalez,Eric Flores,True,False
+394,TX-35,Johnny Garcia,Carlos De La Cruz,False,False
+395,TX-36,Rhonda Hart,Brian Babin,False,True
+396,TX-37,Greg Casar,Lauren Peña,True,False
+397,TX-38,Melissa McDonough,Jon Bonck,False,False
+398,UT-01,Ben McAdams,Riley Owen,False,False
+399,UT-02,Peter Crosby,Blake Moore,False,True
+400,UT-03,Kent Udell,Celeste Maloy,False,True
+401,UT-04,Jonny Larsen,Mike Kennedy,False,True
+402,VA-01,,Rob Wittman,False,True
+403,VA-02,,Jen Kiggans,False,True
+404,VA-03,Bobby Scott,,True,False
+405,VA-04,Jennifer McClellan,,True,False
+406,VA-05,Tom Perriello,John McGuire,False,True
+407,VA-06,,Ben Cline,False,True
+408,VA-07,Eugene Vindman,,True,False
+409,VA-08,Don Beyer,,True,False
+410,VA-09,,Morgan Griffith,False,True
+411,VA-10,Suhas Subramanyam,,True,False
+412,VA-11,James Walkinshaw,,True,False
+413,VT-AL,Becca Balint,Mark Coester,True,False
+414,WA-01,Suzan DelBene,,True,False
+415,WA-02,Rick Larsen,,True,False
+416,WA-03,Marie Gluesenkamp Perez,,True,False
+417,WA-04,,,False,False
+418,WA-05,,Michael Baumgartner,False,True
+419,WA-06,Emily Randall,,True,False
+420,WA-07,Pramila Jayapal,,True,False
+421,WA-08,Kim Schrier,,True,False
+422,WA-09,Adam Smith,,True,False
+423,WA-10,Marilyn Strickland,,True,False
+424,WI-01,,Bryan Steil,False,True
+425,WI-02,Mark Pocan,Erik Olsen,True,False
+426,WI-03,Rebecca Cooke,Derrick Van Orden,False,True
+427,WI-04,Gwen Moore,,True,False
+428,WI-05,,Scott Fitzgerald,False,True
+429,WI-06,,Glenn Grothman,False,True
+430,WI-07,,,False,False
+431,WI-08,,Tony Wied,False,True
+432,WV-01,Vince George,Carol Miller,False,True
+433,WV-02,Ace Parsi,Riley Moore,False,True
+434,WY-AL,Lisa Kinney,,False,False
