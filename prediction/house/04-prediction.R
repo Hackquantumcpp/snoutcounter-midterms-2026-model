@@ -17,3 +17,6 @@ data <- data %>% mutate(
 )
 
 model <- readRDS('../../model/house_model.RDS')
+
+posterior <- posterior_predict(model, newdata = data)
+
