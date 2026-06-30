@@ -74,20 +74,4 @@ rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
 
 pp_check(fit, nreps = 100)
 
-y_hat <- colMeans(posterior)
-
-sd_yhat <- colSds(posterior)
-
-fund_chances <- apply(posterior, 2, \(x) mean(x > 50) * 100)
-
-tot_seats_sims <- apply(posterior, 1, \(x) sum(x > 50))
-
-data <- data %>% mutate(
-  y_pred = y_hat,
-  y_pred_sd = sd_yhat,
-  chance = fund_chances,
-  index = row_number(),
-  sims = lapply(index, function(index) posterior[, index])
-)
-
-saveRDS(data, '../../model_output/house_predictions.RDS')
+saveRDS(fit, "model/house_model.RDS")
