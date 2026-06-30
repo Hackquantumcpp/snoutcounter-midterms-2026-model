@@ -16,3 +16,4 @@ data <- data %>% mutate(
   poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
 )
 
+model <- readRDS('../../model/house_model.RDS')

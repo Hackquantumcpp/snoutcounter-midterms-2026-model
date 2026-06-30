@@ -3,3 +3,4 @@
 * Fundraising data from [Federal Election Commission](https://www.fec.gov/data/browse-data/?tab=bulk-data).
 * Demographic data for states that experienced redistricting changes in 2025-2026 from [Dave's Redistricting App](https://davesredistricting.org/maps#home). Demographic data for remaining states from [Redistricting Data Hub](https://redistrictingdatahub.org/).
 * Polling data from [The New York Times](https://www.nytimes.com/2025/03/17/polls/donald-trump-approval-poll-tracker.html).
+* Scandals database from Nathaniel Rakich.
