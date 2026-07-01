@@ -37,4 +37,12 @@ data <- data %>% mutate(
   sims = lapply(index, function(index) posterior[, index])
 )
 
+ggplot(data = data, mapping = aes(x = y_pred, y = chance)) + geom_point() +
+  labs(
+    x = "Predicted values",
+    y = "Predicted chances"
+  )
+
+ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
+
 saveRDS(data, '../../model_output/house_predictions.RDS')
