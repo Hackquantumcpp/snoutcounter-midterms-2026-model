@@ -16,11 +16,10 @@ data <- data %>% mutate(
   poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
 )
 
-fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg + (generic_ballot_avg | state) +
+fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                     cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
-                     (1 | dem_cand) + (1 | rep_cand) + (1 | year) + #+ (1 | state)
-                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + college +
+                     (1 | dem_cand) + (1 | rep_cand) + (1 | year) + (1 | state) + (1 | demo_cluster) +
+                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = data,
@@ -47,30 +46,26 @@ mcmc_dens_overlay(fit, pars = c("generic_ballot_avg",
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
 neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                          "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
-                         "cvap_hisp_pct", 
-                         "cvap_natam_pct",
-                         "cvap_black_pct", "cvap_aapi_pct",
-                         "sqrt_effn:poll_margin", "college",
+                         "sqrt_effn:poll_margin",
                          "dem_scandal_score", "rep_scandal_score"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
-                   "cvap_hisp_pct", 
-                   "cvap_natam_pct",
-                   "cvap_black_pct", "cvap_aapi_pct",
-                   "sqrt_effn:poll_margin", "college",
+                   "sqrt_effn:poll_margin",
                    "dem_scandal_score", "rep_scandal_score"))
 neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                          "Sigma[rep_cand:(Intercept),(Intercept)]",
                          "Sigma[year:(Intercept),(Intercept)]",
                          "Sigma[state:year:(Intercept),(Intercept)]",
                          "Sigma[state:(Intercept),(Intercept)]",
-                         "Sigma[census_region:(Intercept),(Intercept)]"))
+                         "Sigma[census_region:(Intercept),(Intercept)]",
+                         "Sigma[demo_cluster:(Intercept),(Intercept)]"))
 rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                    "Sigma[rep_cand:(Intercept),(Intercept)]",
                    "Sigma[year:(Intercept),(Intercept)]",
                    "Sigma[state:year:(Intercept),(Intercept)]",
                    "Sigma[state:(Intercept),(Intercept)]",
-                   "Sigma[census_region:(Intercept),(Intercept)]"))
+                   "Sigma[census_region:(Intercept),(Intercept)]",
+                   "Sigma[demo_cluster:(Intercept),(Intercept)]"))
 
 pp_check(fit, nreps = 100)
 
