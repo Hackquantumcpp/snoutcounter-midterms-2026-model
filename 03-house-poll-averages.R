@@ -3,6 +3,7 @@ library(janitor)
 library(rstan)
 library(rstanarm)
 library(DescTools)
+library(readxl)
 
 banned_pollsters <- c("ActiVote",
                       "Trafalgar Group", 
@@ -10,6 +11,8 @@ banned_pollsters <- c("ActiVote",
                       "Big Data Poll",
                       "National Association of Independent Pollsters",
                       "Rasmussen Reports")
+
+## 2018-24 House polling
 
 filepath <- "data/polls/house_polls_historical.csv"
 
@@ -187,6 +190,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   
   return(df)
 }
+
 avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
   df <- data_frame
   
@@ -216,5 +220,122 @@ cand_averages <- unique_cands %>% mutate(
     return (avg_final(polls, cycle, state, seat_number, candidate_name))
   })
 ) %>% unnest_wider(output)
+
+## 2014-16 House polling
+
+polls_1416 <- read_excel('data/polls/Rawpolls_040626.xlsx')
+
+polls_1416 <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
+  filter((cycle %in% c(2014, 2016)) & (type_simple == 'House-G'))
+
+poll_avg_1416 <- function(data_frame, cycle, state, seat_number, candidate) {
+  # Copy data frame, filter for all those less than given date
+  df_og <- data_frame
+  df <- df_og %>% filter(cycle == .env$cycle,
+                         state == .env$state,
+                         seat_number == .env$seat_number,
+                         candidate_name == candidate)
+  
+  # Wrangling
+  df <- df %>% arrange(pollster) %>%
+    rename(mode = methodology) %>% mutate(
+      mode = replace_na(mode, "Unknown")
+    )
+  
+  df <- df %>% mutate(
+    polldate = mdy(polldate),
+  )
+  
+  df <- df %>%
+    mutate(population = recode(population, "LV" = "b", "RV" = "c", "A" = "e")) %>% 
+    arrange(population) %>% 
+    distinct(poll_id, .keep_all = TRUE) %>% 
+    mutate(population = recode(population, "b" = "LV", "c" = "RV", "e" = "A"))
+  
+  ### Sample size weights
+  size_cap <- 5000
+  df_nullsampsize <- df %>% filter(is.na(sample_size) == TRUE)
+  
+  impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode) {
+    df <- data_frame # Copy data frame
+    df_pollst <- df %>% filter(pollster == .env$pollster)
+    df_mode <- df %>% filter(mode == .env$mode)
+    
+    if (nrow(df_pollst) != 0) {
+      return(median(df_pollst$sample_size))
+    }
+    else if (nrow(df_mode) != 0) {
+      return (median(df_mode$sample_size))
+    }
+    else if (any(!is.na(df$sample_size))) {
+      return (median(df$sample_size))
+    }
+    else {
+      df_cycle <- df_og %>% filter(cycle == cycle)
+      return (median(df_cycle$sample_size))
+    }
+  }
+  
+  impute_sample_size_dfnullsampsize <- function(pollster, mode) {
+    return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsamplesize, pollster, mode))
+  }
+  
+  df <- df %>% filter(is.na(sample_size) == FALSE)
+  df <- df %>% mutate(sample_size_winsr = pmin(sample_size, size_cap))
+  df <- df %>% mutate(sample_size_winsr = Winsorize(sample_size_winsr, val = quantile(sample_size_winsr, probs = c(0.025, 0.975), na.rm = FALSE)))
+  
+  if (dim(df_nullsampsize)[1] != 0) {
+    df_nullsampsize <- df_nullsampsize %>% rowwise() %>%
+      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode)) %>%
+      ungroup()
+    
+    df <- bind_rows(df, df_nullsampsize)
+  }
+  
+  df <- df %>% mutate(sample_size_weight = sqrt(pmin(sample_size_winsr, size_cap)) / sqrt(median(pmin(sample_size_winsr, size_cap))))
+  
+  ### Quality weights
+  df <- df %>%
+    mutate(
+      pollscore = coalesce(pollscore, 1),
+      # quality_weight = if_else(predictive_plus_minus < 0.5, exp(-predictive_plus_minus/1.3), 0.2)
+      quality_weight = if_else(pollscore <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
+    )
+  
+  pid_in_window <- function(end_date, pid) {
+    return(polls_in_window(df, end_date, pid))
+  }
+  
+  ### Multiple polls in short window weights
+  # df <- df %>% group_by(pollster) %>%
+  #  mutate(poll_spon_id = cur_group_id()) %>%
+  #  ungroup()
+  # df <- df %>% rowwise() %>% mutate(zone_flood_weight = 1 / sqrt(pid_in_window(end_date, poll_spon_id))) %>%
+  #  ungroup()
+  
+  ### Recency weight
+  window <- 30
+  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(election_date - end_date, units = "days")/window))
+  
+  ## Partisan downweight
+  partisan_dw <- 0.8
+  df <- df %>% mutate(
+    partisan_downweight = if_else(is.na(partisan), 1, partisan_dw)
+  )
+  
+  ## Internal downweight
+  internal_dw <- 0.5 / 0.8
+  df <- df %>% mutate(
+    internal_downweight = if_else(internal == TRUE, internal_dw, 1)
+  ) %>% mutate(
+    internal_downweight = replace_na(1)
+  )
+  
+  ### Bring it all together
+  df <- df %>% mutate(total_weight = sample_size_weight * quality_weight * recency_weight * partisan_downweight * internal_downweight)
+  df$total_weight <- df$total_weight / sum(df$total_weight)
+  
+  return(df)
+}
 
 write_csv(cand_averages, "transformed/house_polling_averages.csv")
