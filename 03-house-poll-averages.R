@@ -223,25 +223,26 @@ cand_averages <- unique_cands %>% mutate(
 
 ## 2014-16 House polling
 
-polls_1416 <- read_excel('data/polls/Rawpolls_040626.xlsx')
+polls_1416 <- read_csv('transformed/polls_silver_wrangled.csv')
 
-polls_1416 <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
-  filter((cycle %in% c(2014, 2016)) & (type_simple == 'House-G'))
+polls_1416 <- polls_1416 %>% mutate(
+  internal = coalesce(if_else((sponsor == cand1_name | sponsor == cand2_name), TRUE, FALSE), FALSE)
+)
 
-poll_avg_1416 <- function(data_frame, cycle, state, seat_number, candidate) {
+polls_1416_house <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
+  filter((year %in% c(2014, 2016)) & (type_simple == 'House-G')) %>% rename(
+    sample_size = samplesize
+  )
+
+
+poll_avg_1416 <- function(data_frame, cycle, location, candidate) {
   # Copy data frame, filter for all those less than given date
   df_og <- data_frame
-  df <- df_og %>% filter(cycle == .env$cycle,
-                         state == .env$state,
-                         seat_number == .env$seat_number,
+  df <- df_og %>% filter(year == cycle,
+                         location == .env$location,
                          candidate_name == candidate)
   
   # Wrangling
-  df <- df %>% arrange(pollster) %>%
-    rename(mode = methodology) %>% mutate(
-      mode = replace_na(mode, "Unknown")
-    )
-  
   df <- df %>% mutate(
     polldate = mdy(polldate),
   )
@@ -302,9 +303,9 @@ poll_avg_1416 <- function(data_frame, cycle, state, seat_number, candidate) {
       quality_weight = if_else(pollscore <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
     )
   
-  pid_in_window <- function(end_date, pid) {
-    return(polls_in_window(df, end_date, pid))
-  }
+  #pid_in_window <- function(end_date, pid) {
+  #  return(polls_in_window(df, end_date, pid))
+  #}
   
   ### Multiple polls in short window weights
   # df <- df %>% group_by(pollster) %>%
@@ -315,7 +316,7 @@ poll_avg_1416 <- function(data_frame, cycle, state, seat_number, candidate) {
   
   ### Recency weight
   window <- 30
-  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(election_date - end_date, units = "days")/window))
+  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(election_date - polldate, units = "days")/window))
   
   ## Partisan downweight
   partisan_dw <- 0.8
