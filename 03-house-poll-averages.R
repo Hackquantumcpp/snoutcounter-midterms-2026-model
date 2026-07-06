@@ -221,9 +221,15 @@ cand_averages <- unique_cands %>% mutate(
   })
 ) %>% unnest_wider(output)
 
-## 2014-16 House polling
+
+
+
+
+########################## 2014-16 House polling ####################################
 
 polls_1416 <- read_csv('transformed/polls_silver_wrangled.csv')
+
+ratings_14 <- read_csv('data/ratings/pollster_ratings_silver.csv') %>% janitor::clean_names()
 
 polls_1416 <- polls_1416 %>% mutate(
   internal = coalesce(if_else((sponsor == cand1_name | sponsor == cand2_name), TRUE, FALSE), FALSE)
@@ -235,22 +241,36 @@ polls_1416_house <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
   )
 
 
-poll_avg_1416 <- function(data_frame, cycle, location, candidate) {
+poll_avg_1416 <- function(data_frame, cycle, location, candidate, cand_1or2) {
   # Copy data frame, filter for all those less than given date
   df_og <- data_frame
+  if (cand_1or2 == 1) {
+    df_og <- df_og %>% rename(
+      candidate_name = cand1_name,
+      pct = cand1_pct
+    )
+  }
+  else {
+    df_og <- df_og %>% rename(
+      candidate_name = cand2_name,
+      pct = cand2_pct
+    )
+  }
+  
   df <- df_og %>% filter(year == cycle,
                          location == .env$location,
                          candidate_name == candidate)
   
   # Wrangling
   df <- df %>% mutate(
-    polldate = mdy(polldate),
+    polldate = ymd(polldate),
+    electiondate = ymd(electiondate)
   )
   
   df <- df %>%
     mutate(population = recode(population, "LV" = "b", "RV" = "c", "A" = "e")) %>% 
     arrange(population) %>% 
-    distinct(poll_id, .keep_all = TRUE) %>% 
+    distinct(poll_id_nate, .keep_all = TRUE) %>% 
     mutate(population = recode(population, "b" = "LV", "c" = "RV", "e" = "A"))
   
   ### Sample size weights
@@ -296,11 +316,15 @@ poll_avg_1416 <- function(data_frame, cycle, location, candidate) {
   df <- df %>% mutate(sample_size_weight = sqrt(pmin(sample_size_winsr, size_cap)) / sqrt(median(pmin(sample_size_winsr, size_cap))))
   
   ### Quality weights
+  ## For 2014-16, retroactively apply 2026 pollster ratings
+  df <- df %>% left_join(
+    ratings_14, join_by(pollster)
+  )
   df <- df %>%
     mutate(
-      pollscore = coalesce(pollscore, 1),
+      pollscore = coalesce(predictive_plus_minus, 1),
       # quality_weight = if_else(predictive_plus_minus < 0.5, exp(-predictive_plus_minus/1.3), 0.2)
-      quality_weight = if_else(pollscore <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
+      quality_weight = if_else(predictive_plus_minus <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
     )
   
   #pid_in_window <- function(end_date, pid) {
@@ -316,7 +340,7 @@ poll_avg_1416 <- function(data_frame, cycle, location, candidate) {
   
   ### Recency weight
   window <- 30
-  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(election_date - polldate, units = "days")/window))
+  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(electiondate - polldate, units = "days")/window))
   
   ## Partisan downweight
   partisan_dw <- 0.8
@@ -338,5 +362,58 @@ poll_avg_1416 <- function(data_frame, cycle, location, candidate) {
   
   return(df)
 }
+avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
+  df <- data_frame
+  
+  df_weights <- poll_avg_1416(data_frame, year, location, candidate, cand_1or2)
+  avg <- sum(df_weights$total_weight * df_weights$pct)
+  std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
+  lower_ci <- avg - 1.96*std
+  upper_ci <- avg + 1.96*std
+  
+  df_weights <- df_weights %>% mutate(
+    effn = -0.3*predictive_plus_minus + 1
+  ) # Measure of "effective" number of polls
+  
+  return(c("avg" = avg, 
+           "std" = std, 
+           "lower_ci" = lower_ci, 
+           "upper_ci" = upper_ci,
+           "effn" = sum(df_weights$effn)))
+}
+
+unique_cand1s_1416 <- unique(
+  polls_1416_house %>% select(year, location, cand1_name, cand1_party)
+)
+unique_cand2s_1416 <- unique(
+  polls_1416_house %>% select(year, location, cand2_name, cand2_party)
+)
+
+cand_averages_1416_cand1s <- unique_cand1s_1416 %>% mutate(
+  output = pmap(list(year, location, cand1_name), function(cycle, location, candidate_name) {
+    return (avg_final_1416(polls_1416_house, cycle, location, candidate_name, 1))
+  })
+) %>% unnest_wider(output)
+
+cand_averages_1416_cand2s <- unique_cand2s_1416 %>% mutate(
+  output = pmap(list(year, location, cand2_name), function(cycle, location, candidate_name) {
+    return (avg_final_1416(polls_1416_house, cycle, location, candidate_name, 2))
+  })
+) %>% unnest_wider(output)
+
+cand_averages_1416_cand1s <- cand_averages_1416_cand1s %>% rename(
+  candidate_name = cand1_name,
+  party = cand1_party
+) 
+
+cand_averages_1416_cand2s <- cand_averages_1416_cand2s %>% rename(
+  candidate_name = cand2_name,
+  party = cand2_party
+) 
+
+cand_avgs_1416 <- bind_rows(cand_averages_1416_cand1s, cand_averages_1416_cand2s)
+
+
 
 write_csv(cand_averages, "transformed/house_polling_averages.csv")
+write_csv(cand_avgs_1416, "transformed/house_polling_averages_2014-16.csv")
