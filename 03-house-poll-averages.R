@@ -232,7 +232,7 @@ polls_1416 <- read_csv('transformed/polls_silver_wrangled.csv')
 ratings_14 <- read_csv('data/ratings/pollster_ratings_silver.csv') %>% janitor::clean_names()
 
 polls_1416 <- polls_1416 %>% mutate(
-  internal = coalesce(if_else((sponsor == cand1_name | sponsor == cand2_name), TRUE, FALSE), FALSE)
+  internal = coalesce(if_else((sponsor == cand1_name | sponsor == cand2_name | sponsor == 'unspecified Democratic sponsor' | sponsor == 'unspecified Republican sponsor'), TRUE, FALSE), FALSE)
 )
 
 polls_1416_house <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
@@ -412,6 +412,17 @@ cand_averages_1416_cand2s <- cand_averages_1416_cand2s %>% rename(
 ) 
 
 cand_avgs_1416 <- bind_rows(cand_averages_1416_cand1s, cand_averages_1416_cand2s)
+
+
+
+
+
+############################### 2014-16 Generic Ballot ################################
+
+#polls_1416_gb <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
+#  filter((year %in% c(2014, 2016)) & (location == 'US') & (cand1_name == 'Generic Candidate')) %>% rename(
+#    sample_size = samplesize
+#  )
 
 
 
