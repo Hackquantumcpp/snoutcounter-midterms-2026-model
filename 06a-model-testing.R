@@ -16,13 +16,22 @@ data <- data %>% mutate(
   poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
 )
 
-set.seed(2200)
+sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")
+
+data <- data %>% left_join(sb_elasticity, join_by(state_po))
+
+data <- data %>% mutate(
+  prior_lean = pvi - (elasticity * generic_ballot_avg)
+)
+
+set.seed(2300)
 
 train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
-fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg + (1 | demo_cluster) +
+fit <- stan_glmer( dem_pct_2p ~ prior_lean + #pvi + generic_ballot_avg + 
+                     (1 | demo_cluster) +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      # cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | year) + (1 | state) +
@@ -53,7 +62,7 @@ mcmc_dens_overlay(fit, pars = c("pvi", "dem_inc_dummy",
 mcmc_dens_overlay(fit, pars = c("generic_ballot_avg", 
                                 "dem_funds_2p_pct_sqrd")) + ylab('density')
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
-neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
+neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy",
                          "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
@@ -125,7 +134,8 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg + (1 | state) + (1 | demo_cluster) +
+backtest_model <- stan_glmer( dem_pct_2p ~ prior_lean + #pvi + generic_ballot_avg + 
+                                (1 | state) + (1 | demo_cluster) +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                                         #cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                                        (1 | dem_cand) + (1 | rep_cand) + (1 | year) +
