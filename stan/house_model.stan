@@ -32,9 +32,19 @@ parameters {
     real beta_5; // Coeff for sqrt_effn:poll_margin interaction
     real beta_6; // Coeff for dem_scandal_score
     real beta_7; // Coeff for rep_scandal_score
+    real <lower=0> sigma; // Standard deviation for Gaussian
 
 }
 
 model {
-    
+   alpha ~ normal(50, 5);
+   beta_0 ~ normal(1, 2);
+   beta_1 ~ normal(-1, 2);
+   beta_2 ~ normal(0, 10);
+   beta_3 ~ normal(0, 10);
+   beta_4 ~ normal(0, 10);
+   beta_5 ~ normal(0, 10);
+   beta_6 ~ normal(0, 10);
+   beta_7 ~ normal(0, 10);
+   // sigma ~ exponential(); // Fill in
 }
