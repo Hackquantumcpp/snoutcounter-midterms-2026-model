@@ -13,24 +13,25 @@ data <- data %>% mutate(
   dem_funds_2p_pct_sqrd = dem_funds_2p_pct**2,
   effn = pmax(dem_effn, rep_effn),
   sqrt_effn = sqrt(effn),
-  poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
+  poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
+  dem_pct_2p_offset = dem_pct_2p - 50
 )
 
-sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")
+# sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")
 
-data <- data %>% left_join(sb_elasticity, join_by(state_po))
+# data <- data %>% left_join(sb_elasticity, join_by(state_po))
 
-data <- data %>% mutate(
-  prior_lean = pvi - (elasticity * generic_ballot_avg)
-)
+# data <- data %>% mutate(
+#  prior_lean = pvi - (elasticity * generic_ballot_avg)
+#)
 
-set.seed(2300)
+set.seed(2400)
 
 train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
-fit <- stan_glmer( dem_pct_2p ~ prior_lean + #pvi + generic_ballot_avg + 
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg + 
                      (1 | demo_cluster) +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      # cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
