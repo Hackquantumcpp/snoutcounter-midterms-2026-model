@@ -13,10 +13,12 @@ data <- data %>% mutate(
   dem_funds_2p_pct_sqrd = dem_funds_2p_pct**2,
   effn = pmax(dem_effn, rep_effn),
   sqrt_effn = sqrt(effn),
-  poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
+  poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
+  dem_pct_2p_offset = dem_pct_2p - 50,
+  baseline = pvi - generic_ballot_avg
 )
 
-fit <- stan_glmer( dem_pct_2p ~ pvi + generic_ballot_avg +
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | year) + (1 | state) + (1 | demo_cluster) +
                      (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +

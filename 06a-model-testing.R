@@ -14,7 +14,8 @@ data <- data %>% mutate(
   effn = pmax(dem_effn, rep_effn),
   sqrt_effn = sqrt(effn),
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
-  dem_pct_2p_offset = dem_pct_2p - 50
+  dem_pct_2p_offset = dem_pct_2p - 50,
+  baseline = pvi - generic_ballot_avg
 )
 
 # sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")
@@ -25,7 +26,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(2400)
+set.seed(2500)
 
 train_data <- data %>% sample_frac(0.67)
 
@@ -36,7 +37,7 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                      # cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | year) + (1 | state) +
-                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + # college +
+                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin #+  college +
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = train_data,
@@ -100,16 +101,16 @@ y_hat_mean <- colMeans(y_hat)
 
 y_hat_sd <- colSds(y_hat)
 
-y_act = test_data$dem_pct_2p
+y_act = test_data$dem_pct_2p_offset
 
 mae <- mean(abs(y_hat_mean - y_act))
 
 mde <- mean(y_hat_mean - y_act) # Directional
 
-fund_chances <- apply(y_hat, 2, \(x) mean(x > 50) * 100)
+fund_chances <- apply(y_hat, 2, \(x) mean(x > 0) * 100)
 
 test_data <- test_data %>% mutate(
-  y_pred = y_hat_mean,
+  y_pred = y_hat_mean + 50,
   y_act = dem_pct_2p,
   poster_sd = y_hat_sd
 ) %>% mutate(
@@ -120,7 +121,7 @@ test_data <- test_data %>% mutate(
   z = err / poster_sd
 )
 
-ggplot() + geom_point(mapping = aes(x = y_hat_mean, y = y_act)) +
+ggplot() + geom_point(mapping = aes(x = y_hat_mean + 50, y = y_act + 50)) +
   labs(
     x = "Predicted values",
     y = "Actual values",
@@ -135,7 +136,7 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p ~ prior_lean + #pvi + generic_ballot_avg + 
+backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg + 
                                 (1 | state) + (1 | demo_cluster) +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
                                         #cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
@@ -199,16 +200,16 @@ y_hat_2024 <- colMeans(poster_2024)
 
 sd_yhat_2024 <- colSds(poster_2024)
 
-fund_chances <- apply(poster_2024, 2, \(x) mean(x > 50) * 100)
+fund_chances <- apply(poster_2024, 2, \(x) mean(x > 0) * 100)
 
-tot_seats_sims <- apply(poster_2024, 1, \(x) sum(x > 50))
+tot_seats_sims <- apply(poster_2024, 1, \(x) sum(x > 0))
 
-y_act_2024 <- data_24$dem_pct_2p
+y_act_2024 <- data_24$dem_pct_2p_offset
 
 mae <- mean(abs(y_hat_2024 - y_act_2024))
 
 data_24 <- data_24 %>% mutate(
-  y_pred = y_hat_2024,
+  y_pred = y_hat_2024 + 50,
   y_act = dem_pct_2p,
   y_pred_sd = sd_yhat_2024,
   fund_chances = fund_chances
@@ -225,7 +226,7 @@ data_24 <- data_24 %>% mutate(
   sims = lapply(index, function(index) poster_2024[, index])
 )
 
-ggplot() + geom_point(mapping = aes(x = y_hat_2024, y = y_act_2024)) +
+ggplot() + geom_point(mapping = aes(x = y_hat_2024 + 50, y = y_act_2024 + 50)) +
   labs(
     x = "Predicted values",
     y = "Actual values",

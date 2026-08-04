@@ -133,7 +133,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
     return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsamplesize, pollster, mode))
   }
   
-  df <- df %>% filter(is.na(sample_size) == FALSE)
+  df <- df %>% filter(is.na(sample_size) == FALSE) # TODO: handle null sample size polls
   df <- df %>% mutate(sample_size_winsr = pmin(sample_size, size_cap))
   df <- df %>% mutate(sample_size_winsr = Winsorize(sample_size_winsr, val = quantile(sample_size_winsr, probs = c(0.025, 0.975), na.rm = FALSE)))
   
@@ -201,7 +201,9 @@ avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
   upper_ci <- avg + 1.96*std
   
   df_weights <- df_weights %>% mutate(
-    effn = -0.3*pollscore + 1
+    effn_notime = -0.3*pollscore + 1,
+    time_adj = exp(as.numeric(election_date - end_date, units = "days")/30),
+    effn = effn_notime * time_adj
   ) # Measure of "effective" number of polls
   
   return(c("avg" = avg, 
@@ -372,7 +374,9 @@ avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
   upper_ci <- avg + 1.96*std
   
   df_weights <- df_weights %>% mutate(
-    effn = -0.3*predictive_plus_minus + 1
+    effn_notime = -0.3*pollscore + 1,
+    time_adj = exp(as.numeric(electiondate - polldate, units = "days")/30),
+    effn = effn_notime * time_adj
   ) # Measure of "effective" number of polls
   
   return(c("avg" = avg, 
@@ -412,18 +416,6 @@ cand_averages_1416_cand2s <- cand_averages_1416_cand2s %>% rename(
 ) 
 
 cand_avgs_1416 <- bind_rows(cand_averages_1416_cand1s, cand_averages_1416_cand2s)
-
-
-
-
-
-############################### 2014-16 Generic Ballot ################################
-
-#polls_1416_gb <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
-#  filter((year %in% c(2014, 2016)) & (location == 'US') & (cand1_name == 'Generic Candidate')) %>% rename(
-#    sample_size = samplesize
-#  )
-
 
 
 write_csv(cand_averages, "transformed/house_polling_averages.csv")

@@ -129,7 +129,7 @@ poll_avg <- function(data_frame, state, seat_number, candidate) {
     return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsamplesize, pollster, mode))
   }
   
-  df <- df %>% filter(is.na(sample_size) == FALSE)
+  df <- df %>% filter(is.na(sample_size) == FALSE) # TODO: handle null sample size polls
   df <- df %>% mutate(sample_size_winsr = pmin(sample_size, size_cap))
   df <- df %>% mutate(sample_size_winsr = Winsorize(sample_size_winsr, val = quantile(sample_size_winsr, probs = c(0.025, 0.975), na.rm = FALSE)))
   
@@ -208,6 +208,9 @@ avg_final <- function(data_frame, state, seat_number, candidate) {
   df <- data_frame
   
   df_weights <- poll_avg(data_frame, state, seat_number, candidate)
+  #if (state == "PA" & seat_number == 7) {
+  #  View(df_weights)
+  #}
   avg <- sum(df_weights$total_weight * df_weights$pct)
   std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
   lower_ci <- avg - 1.96*std
@@ -226,7 +229,7 @@ avg_final <- function(data_frame, state, seat_number, candidate) {
 
 unique_cands <- unique(
   polls %>% select(state, seat_number, candidate_name, party)
-)
+) %>% arrange(state)
 
 cand_averages <- unique_cands %>% mutate(
   output = pmap(list(state, seat_number, candidate_name), function(state, seat_number, candidate_name) {

@@ -13,7 +13,8 @@ data <- data %>% mutate(
   dem_funds_2p_pct_sqrd = dem_funds_2p_pct**2,
   effn = pmax(dem_effn, rep_effn),
   sqrt_effn = sqrt(effn),
-  poll_margin = rep_poll_avg - dem_poll_avg # Keep consistency in convention
+  poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
+  baseline = pvi - generic_ballot_avg
 )
 
 model <- readRDS('../../model/house_model.RDS')
@@ -21,13 +22,13 @@ model <- readRDS('../../model/house_model.RDS')
 set.seed(42)
 posterior <- posterior_predict(model, newdata = data)
 
-y_hat <- colMeans(posterior)
+y_hat <- colMeans(posterior) + 50
 
 sd_yhat <- colSds(posterior)
 
-fund_chances <- apply(posterior, 2, \(x) mean(x > 50) * 100)
+fund_chances <- apply(posterior, 2, \(x) mean(x > 0) * 100)
 
-tot_seats_sims <- apply(posterior, 1, \(x) sum(x > 50))
+tot_seats_sims <- apply(posterior, 1, \(x) sum(x > 0))
 
 data <- data %>% mutate(
   y_pred = y_hat,

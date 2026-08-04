@@ -1,5 +1,5 @@
 ,cd,dem_cand,rep_cand,dem_inc_any,rep_inc_any
-0,AK-AL,,Nick Begich,False,True
+0,AK-AL,Bill Hill,Nick Begich,False,True
 1,AL-01,Clyde Jones Jr.,Jerry Carl,False,False
 2,AL-02,Shomari Figures,Hampton Harris,True,False
 3,AL-03,Lee McInnis,Mike Rogers,False,True
@@ -11,14 +11,14 @@
 9,AR-02,Chris Jones,French Hill,False,True
 10,AR-03,Robb Ryerse,Steve Womack,True,False
 11,AR-04,James Russell,Bruce Westerman,True,False
-12,AZ-01,,,False,False
+12,AZ-01,Amish Shah,Jay Feely,False,False
 13,AZ-02,Jonathan Nez,Elijah Crane,False,True
-14,AZ-03,Yassamin Ansari,,True,False
+14,AZ-03,Yassamin Ansari,Nicholas Glenn,True,False
 15,AZ-04,Greg Stanton,Zuhdi Jasser,False,True
-16,AZ-05,,,False,True
+16,AZ-05,Elizabeth Lee,Mark Lamb,False,True
 17,AZ-06,JoAnna Mendoza,Juan Ciscomani,False,True
 18,AZ-07,Adelita Grijalva,Daniel Butierez,False,True
-19,AZ-08,,Abraham Hamadeh,False,True
+19,AZ-08,Bernadette Greene-Placentia,Abraham Hamadeh,False,True
 20,AZ-09,Dani Sterbinsky,Paul Gosar,False,True
 21,CA-01,Mike McGuire,James Gallagher,False,True
 22,CA-02,Jared Huffman,Robin Littau,True,False
