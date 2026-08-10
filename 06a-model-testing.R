@@ -26,7 +26,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(2500)
+set.seed(2600)
 
 train_data <- data %>% sample_frac(0.67)
 
@@ -34,14 +34,13 @@ test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg + 
                      (1 | demo_cluster) +
-                     dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                     # cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
-                     (1 | dem_cand) + (1 | rep_cand) + (1 | year) + (1 | state) +
-                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin #+  college +
+                     dem_funds_2p_pct_sqrd + inc_dummy +
+                     (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | state:year) + #(1 | year) +
+                      (1 | census_region) + sqrt_effn:poll_margin + 
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = train_data,
-                   prior = normal(0, 2.5, autoscale = TRUE),
+                   prior = normal(0, 4, autoscale = TRUE),
                    adapt_delta = 0.99,
                    refresh = 10,
                    iter = 5000*2,
@@ -121,6 +120,11 @@ test_data <- test_data %>% mutate(
   z = err / poster_sd
 )
 
+comp_mae <- mean((test_data %>% filter((y_pred >= 45 & y_pred <= 55) | (y_act >= 45 & y_act <= 55)))$abs_err)
+
+comp_mde <- mean((test_data %>% filter((y_pred >= 45 & y_pred <= 55) | (y_act >= 45 & y_act <= 55)))$err)
+
+
 ggplot() + geom_point(mapping = aes(x = y_hat_mean + 50, y = y_act + 50)) +
   labs(
     x = "Predicted values",
@@ -139,13 +143,12 @@ data_24 <- data %>% filter(year == 2024)
 backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg + 
                                 (1 | state) + (1 | demo_cluster) +
                                        dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                                        #cvap_hisp_pct + cvap_natam_pct + cvap_black_pct + cvap_aapi_pct +
-                                       (1 | dem_cand) + (1 | rep_cand) + (1 | year) +
-                                (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin + #college +
+                                       (1 | dem_cand) + (1 | rep_cand) + #(1 | year) +
+                                (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
                                 dem_scandal_score + rep_scandal_score,
                                      family = gaussian(),
                                      data = pre24,
-                                     prior = normal(0, 2.5, autoscale = TRUE),
+                                     prior = normal(0, 4, autoscale = TRUE),
                                      adapt_delta = 0.99,
                                      refresh = 100,
                                      iter = 5000*2,

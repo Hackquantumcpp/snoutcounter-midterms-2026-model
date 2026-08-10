@@ -18,14 +18,14 @@ data <- data %>% mutate(
   baseline = pvi - generic_ballot_avg
 )
 
-fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg +
                      dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
-                     (1 | dem_cand) + (1 | rep_cand) + (1 | year) + (1 | state) + (1 | demo_cluster) +
+                     (1 | dem_cand) + (1 | rep_cand) +  (1 | state) + (1 | demo_cluster) + #(1 | year) +
                      (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = data,
-                   prior = normal(0, 2.5, autoscale = TRUE),
+                   prior = normal(0, 4, autoscale = TRUE),
                    adapt_delta = 0.99,
                    refresh = 10,
                    iter = 5000*2,
