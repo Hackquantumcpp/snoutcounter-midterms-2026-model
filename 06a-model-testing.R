@@ -15,7 +15,8 @@ data <- data %>% mutate(
   sqrt_effn = sqrt(effn),
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
   dem_pct_2p_offset = dem_pct_2p - 50,
-  baseline = pvi - generic_ballot_avg
+  baseline = 2*pvi - generic_ballot_avg, # PVI is offset from 50%, not margin
+  dem_funds_2p_pct_offset = dem_funds_2p_pct - 50
 )
 
 # sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")
@@ -32,9 +33,9 @@ train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
-fit <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg + 
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
                      (1 | demo_cluster) +
-                     dem_funds_2p_pct_sqrd + inc_dummy +
+                     dem_funds_2p_pct_offset + inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | state:year) + #(1 | year) +
                       (1 | census_region) + sqrt_effn:poll_margin + 
                      dem_scandal_score + rep_scandal_score,
@@ -63,14 +64,16 @@ mcmc_dens_overlay(fit, pars = c("pvi", "dem_inc_dummy",
 mcmc_dens_overlay(fit, pars = c("generic_ballot_avg", 
                                 "dem_funds_2p_pct_sqrd")) + ylab('density')
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
-neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy",
+neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", "baseline",
+                         "inc_dummy", "dem_funds_2p_pct_offset",
                          "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
                          "sqrt_effn:poll_margin", "college",
                          "dem_scandal_score", "rep_scandal_score"))
-rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
+rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
+                   "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
@@ -124,7 +127,6 @@ comp_mae <- mean((test_data %>% filter((y_pred >= 45 & y_pred <= 55) | (y_act >=
 
 comp_mde <- mean((test_data %>% filter((y_pred >= 45 & y_pred <= 55) | (y_act >= 45 & y_act <= 55)))$err)
 
-
 ggplot() + geom_point(mapping = aes(x = y_hat_mean + 50, y = y_act + 50)) +
   labs(
     x = "Predicted values",
@@ -140,9 +142,9 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg + 
+backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
                                 (1 | state) + (1 | demo_cluster) +
-                                       dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
+                                       dem_funds_2p_pct_offset + inc_dummy +
                                        (1 | dem_cand) + (1 | rep_cand) + #(1 | year) +
                                 (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
                                 dem_scandal_score + rep_scandal_score,
