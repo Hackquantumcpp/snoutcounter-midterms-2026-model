@@ -15,11 +15,12 @@ data <- data %>% mutate(
   sqrt_effn = sqrt(effn),
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
   dem_pct_2p_offset = dem_pct_2p - 50,
-  baseline = pvi - generic_ballot_avg
+  dem_funds_2p_pct_offset = dem_funds_2p_pct - 50,
+  baseline = 2*pvi - generic_ballot_avg
 )
 
-fit <- stan_glmer( dem_pct_2p_offset ~ 0 + pvi + generic_ballot_avg +
-                     dem_funds_2p_pct_sqrd + dem_inc_dummy + rep_inc_dummy +
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
+                     dem_funds_2p_pct_offset + inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) +  (1 | state) + (1 | demo_cluster) + #(1 | year) +
                      (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
                      dem_scandal_score + rep_scandal_score,
@@ -46,12 +47,12 @@ mcmc_dens_overlay(fit, pars = c("pvi", "dem_inc_dummy",
 mcmc_dens_overlay(fit, pars = c("generic_ballot_avg", 
                                 "dem_funds_2p_pct_sqrd")) + ylab('density')
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
-neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
-                         "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
+neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "inc_dummy", "baseline",
+                         "generic_ballot_avg", "dem_funds_2p_pct_sqrd", "dem_funds_2p_pct_offset",
                          "sqrt_effn:poll_margin",
                          "dem_scandal_score", "rep_scandal_score"))
-rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy",
-                   "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
+rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "inc_dummy", "baseline",
+                   "generic_ballot_avg", "dem_funds_2p_pct_sqrd", "dem_funds_2p_pct_offset",
                    "sqrt_effn:poll_margin",
                    "dem_scandal_score", "rep_scandal_score"))
 neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",

@@ -16,7 +16,7 @@ data <- data %>% mutate(
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
   dem_pct_2p_offset = dem_pct_2p - 50,
   baseline = 2*pvi - generic_ballot_avg, # PVI is offset from 50%, not margin
-  dem_funds_2p_pct_offset = dem_funds_2p_pct - 50
+  funds_pct_margin = if_else(dem_funds_2p + rep_funds_2p == 0, 0, (dem_funds_2p - rep_funds_2p) / (dem_funds_2p + rep_funds_2p))
 )
 
 # sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")

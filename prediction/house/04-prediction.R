@@ -14,7 +14,9 @@ data <- data %>% mutate(
   effn = pmax(dem_effn, rep_effn),
   sqrt_effn = sqrt(effn),
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
-  baseline = pvi - generic_ballot_avg
+  baseline = 2*pvi - generic_ballot_avg,
+  dem_funds_2p_pct_offset = dem_funds_2p_pct - 50,
+  inc_dummy = dem_inc_dummy - rep_inc_dummy
 )
 
 model <- readRDS('../../model/house_model.RDS')
