@@ -16,7 +16,7 @@ data <- data %>% mutate(
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
   dem_pct_2p_offset = dem_pct_2p - 50,
   baseline = 2*pvi - generic_ballot_avg, # PVI is offset from 50%, not margin
-  funds_pct_margin = if_else(dem_funds_2p + rep_funds_2p == 0, 0, (dem_funds_2p - rep_funds_2p) / (dem_funds_2p + rep_funds_2p))
+  funds_pct_margin = if_else(dem_tot_funds + rep_tot_funds == 0, 0, (dem_tot_funds - rep_tot_funds) / (dem_tot_funds + rep_tot_funds)) * 100
 )
 
 # sb_elasticity <- read_csv("data/silver_bulletin_state_elasticity.csv")
@@ -27,17 +27,18 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(2600)
+set.seed(2800)
 
 train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
-                     (1 | demo_cluster) +
-                     dem_funds_2p_pct_offset + inc_dummy +
-                     (1 | dem_cand) + (1 | rep_cand) + (1 | state) + (1 | state:year) + #(1 | year) +
-                      (1 | census_region) + sqrt_effn:poll_margin + 
+                     (1 | demo_cluster:year) +
+                     funds_pct_margin + inc_dummy +
+                     (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
+                     #(1 | state) + #(1 | year) +
+                      (1 | census_region:year) + sqrt_effn:poll_margin + 
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = train_data,
@@ -66,7 +67,7 @@ mcmc_dens_overlay(fit, pars = c("generic_ballot_avg",
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
 neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                          "inc_dummy", "dem_funds_2p_pct_offset",
-                         "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
+                         "generic_ballot_avg", "funds_pct_margin",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
@@ -74,7 +75,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "dem_scandal_score", "rep_scandal_score"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "inc_dummy", "dem_funds_2p_pct_offset",
-                   "generic_ballot_avg", "dem_funds_2p_pct_sqrd",
+                   "generic_ballot_avg", "funds_pct_margin",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",

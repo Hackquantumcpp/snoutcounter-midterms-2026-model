@@ -16,13 +16,14 @@ data <- data %>% mutate(
   poll_margin = rep_poll_avg - dem_poll_avg, # Keep consistency in convention
   dem_pct_2p_offset = dem_pct_2p - 50,
   dem_funds_2p_pct_offset = dem_funds_2p_pct - 50,
-  baseline = 2*pvi - generic_ballot_avg
+  baseline = 2*pvi - generic_ballot_avg,
+  funds_pct_margin = if_else(dem_tot_funds + rep_tot_funds == 0, 0, (dem_tot_funds - rep_tot_funds) / (dem_tot_funds + rep_tot_funds)) * 100
 )
 
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
-                     dem_funds_2p_pct_offset + inc_dummy +
-                     (1 | dem_cand) + (1 | rep_cand) +  (1 | state) + (1 | demo_cluster) + #(1 | year) +
-                     (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
+                     funds_pct_margin + inc_dummy +
+                     (1 | dem_cand) + (1 | rep_cand) +  (1 | demo_cluster:year) + (1 | year) +
+                     (1 | state:year) + (1 | census_region:year) + sqrt_effn:poll_margin +
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = data,
@@ -48,10 +49,12 @@ mcmc_dens_overlay(fit, pars = c("generic_ballot_avg",
                                 "dem_funds_2p_pct_sqrd")) + ylab('density')
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
 neff_ratio(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "inc_dummy", "baseline",
+                         "funds_pct_margin",
                          "generic_ballot_avg", "dem_funds_2p_pct_sqrd", "dem_funds_2p_pct_offset",
                          "sqrt_effn:poll_margin",
                          "dem_scandal_score", "rep_scandal_score"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "inc_dummy", "baseline",
+                   "funds_pct_margin",
                    "generic_ballot_avg", "dem_funds_2p_pct_sqrd", "dem_funds_2p_pct_offset",
                    "sqrt_effn:poll_margin",
                    "dem_scandal_score", "rep_scandal_score"))
@@ -60,15 +63,15 @@ neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                          "Sigma[year:(Intercept),(Intercept)]",
                          "Sigma[state:year:(Intercept),(Intercept)]",
                          "Sigma[state:(Intercept),(Intercept)]",
-                         "Sigma[census_region:(Intercept),(Intercept)]",
-                         "Sigma[demo_cluster:(Intercept),(Intercept)]"))
+                         "Sigma[census_region:year:(Intercept),(Intercept)]",
+                         "Sigma[demo_cluster:year:(Intercept),(Intercept)]"))
 rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                    "Sigma[rep_cand:(Intercept),(Intercept)]",
                    "Sigma[year:(Intercept),(Intercept)]",
                    "Sigma[state:year:(Intercept),(Intercept)]",
                    "Sigma[state:(Intercept),(Intercept)]",
-                   "Sigma[census_region:(Intercept),(Intercept)]",
-                   "Sigma[demo_cluster:(Intercept),(Intercept)]"))
+                   "Sigma[census_region:year:(Intercept),(Intercept)]",
+                   "Sigma[demo_cluster:year:(Intercept),(Intercept)]"))
 
 pp_check(fit, nreps = 100)
 
