@@ -27,7 +27,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(2800)
+set.seed(3000)
 
 train_data <- data %>% sample_frac(0.67)
 
@@ -35,7 +35,7 @@ test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
                      (1 | demo_cluster:year) +
-                     funds_pct_margin + inc_dummy +
+                     funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
                      #(1 | state) + #(1 | year) +
                       (1 | census_region:year) + sqrt_effn:poll_margin + 
@@ -68,6 +68,7 @@ mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
 neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                          "inc_dummy", "dem_funds_2p_pct_offset",
                          "generic_ballot_avg", "funds_pct_margin",
+                         "funds_pct_margin:polarization", "inc_dummy:polarization",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
@@ -76,6 +77,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "funds_pct_margin",
+                   "funds_pct_margin:polarization", "inc_dummy:polarization",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",
@@ -86,13 +88,16 @@ neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
                                     "Sigma[state:(Intercept),(Intercept)]",
-                         "Sigma[census_region:(Intercept),(Intercept)]"))
+                         "Sigma[census_region:year:(Intercept),(Intercept)]",
+                         "Sigma[demo_cluster:year:(Intercept),(Intercept)]"))
 rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                               "Sigma[rep_cand:(Intercept),(Intercept)]",
                               "Sigma[year:(Intercept),(Intercept)]",
                               "Sigma[state:year:(Intercept),(Intercept)]",
                               "Sigma[state:(Intercept),(Intercept)]",
-                   "Sigma[census_region:(Intercept),(Intercept)]"))
+                   "Sigma[census_region:(Intercept),(Intercept)]",
+                   "Sigma[census_region:year:(Intercept),(Intercept)]",
+                   "Sigma[demo_cluster:year:(Intercept),(Intercept)]"))
 
 # Validation
 
@@ -144,10 +149,11 @@ pre24 <- data %>% filter(year < 2024)
 data_24 <- data %>% filter(year == 2024)
 
 backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
-                                (1 | state) + (1 | demo_cluster) +
-                                       dem_funds_2p_pct_offset + inc_dummy +
-                                       (1 | dem_cand) + (1 | rep_cand) + #(1 | year) +
-                                (1 | state:year) + (1 | census_region) + sqrt_effn:poll_margin +
+                                (1 | demo_cluster:year) +
+                                funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
+                                (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
+                                #(1 | state) + #(1 | year) +
+                                (1 | census_region:year) + sqrt_effn:poll_margin + 
                                 dem_scandal_score + rep_scandal_score,
                                      family = gaussian(),
                                      data = pre24,
