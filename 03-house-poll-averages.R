@@ -202,7 +202,7 @@ avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
   
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*pollscore + 1,
-    time_adj = exp(as.numeric(election_date - end_date, units = "days")/30),
+    time_adj = exp(-as.numeric(election_date - end_date, units = "days")/30),
     effn = effn_notime * time_adj
   ) # Measure of "effective" number of polls
   
@@ -375,7 +375,7 @@ avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
   
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*pollscore + 1,
-    time_adj = exp(as.numeric(electiondate - polldate, units = "days")/30),
+    time_adj = exp(-as.numeric(electiondate - polldate, units = "days")/30),
     effn = effn_notime * time_adj
   ) # Measure of "effective" number of polls
   

@@ -22,6 +22,7 @@ data <- data %>% mutate(
 
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
                      funds_pct_margin + inc_dummy +
+                     polarization:funds_pct_margin + polarization:inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) +  (1 | demo_cluster:year) + (1 | year) +
                      (1 | state:year) + (1 | census_region:year) + sqrt_effn:poll_margin +
                      dem_scandal_score + rep_scandal_score,

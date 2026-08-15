@@ -27,7 +27,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3000)
+set.seed(3100)
 
 train_data <- data %>% sample_frac(0.67)
 
