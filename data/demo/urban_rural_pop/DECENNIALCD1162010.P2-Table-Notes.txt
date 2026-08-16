@@ -1,0 +1,12 @@
+
+=============================================================================================================
+Notes
+=============================================================================================================
+
+NOTE: For information on confidentiality protection, nonsampling error, and definitions, see <a href=\"https://www2.census.gov/programs-surveys/decennial/rdo/technical-documentation/CD116_TechnicalDocumentation.pdf\">https://www2.census.gov/programs-surveys/decennial/rdo/technical-documentation/CD116_TechnicalDocumentation.pdf<\/a>.
+
+-------------------------------------------------------------------------------------------------------------
+
+Source: U.S. Census Bureau, 2010 Census.
+
+-------------------------------------------------------------------------------------------------------------

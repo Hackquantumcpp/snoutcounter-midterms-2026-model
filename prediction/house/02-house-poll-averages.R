@@ -217,7 +217,9 @@ avg_final <- function(data_frame, state, seat_number, candidate) {
   upper_ci <- avg + 1.96*std
   
   df_weights <- df_weights %>% mutate(
-    effn = -0.3*predictive_plus_minus + 1
+    effn_notime = -0.3*predictive_plus_minus + 1,
+    time_adj = exp(-as.numeric(today() - end_date, units = "days")/30),
+    effn = effn_notime * time_adj
   ) # Measure of "effective" number of polls
   
   return(c("avg" = avg, 

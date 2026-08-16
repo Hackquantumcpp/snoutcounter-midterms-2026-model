@@ -1,0 +1,16 @@
+
+=============================================================================================================
+Notes
+=============================================================================================================
+
+Note: For information on data collection, confidentiality protection, nonsampling error, subject definitions, and guidance on using the data, visit the <a href=\"https://www2.census.gov/programs-surveys/decennial/2020/technical-documentation/complete-tech-docs/119th-congressional-district-summary-file/2020census-119thcongressional-districts-techdoc.pdf\">2020 Census 119th Congressional District Summary File (CD119) Technical Documentation<\/a> webpage.<br/><br/>
+
+-------------------------------------------------------------------------------------------------------------
+
+To protect respondent confidentiality, data have undergone disclosure avoidance methods which add \"statistical noise\" - small, random additions or subtractions - to the data so that no one can reliably link the published data to a specific person or household. The Census Bureau encourages data users to aggregate small populations and geographies to improve accuracy and diminish implausible results.<br/><br/>
+
+-------------------------------------------------------------------------------------------------------------
+
+Source: U.S. Census Bureau, 2020 Census 119th Congressional District Summary File (CD119)<br/><br/>
+
+-------------------------------------------------------------------------------------------------------------
