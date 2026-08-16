@@ -9,4 +9,3 @@
 * [Database of politicial scandals by federal/statewide officeholders](https://docs.google.com/spreadsheets/d/1ksBLxRR3GCZd33IvhkcNqqBd5K8HwlWC7YuAkVmS1lg/edit?gid=0#gid=0) from Nathaniel Rakich.
 * [Split Ticket WAR Database](https://split-ticket.org/full-wins-above-replacement-war-database/) from (of course) Split Ticket. I utilize this to ensure consistency in candidate names in the MIT Election Lab dataset; I do not utilize Split Ticket's WAR values in my model.
 * Congressional district shapefiles from The Downballot.
-* TIGER/LINE shapefiles for census blocks from US Census Bureau.

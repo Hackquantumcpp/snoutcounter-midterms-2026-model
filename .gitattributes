@@ -5,3 +5,4 @@
 *.prj filter=lfs diff=lfs merge=lfs -text
 *.cpg filter=lfs diff=lfs merge=lfs -text
 *.dbf filter=lfs diff=lfs merge=lfs -text
+2026_data/urban_rural_demo/DECENNIALDHC2020.P2-Data.csv filter=lfs diff=lfs merge=lfs -text
