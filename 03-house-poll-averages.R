@@ -105,11 +105,15 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
     distinct(poll_id, .keep_all = TRUE) %>% 
     mutate(population = recode(population, "b" = "LV", "c" = "RV", "e" = "A"))
   
+  #if ((state == "Rhode Island") & (cycle == 2024)) {
+  #  print("hello world")
+  #}
+  
   ### Sample size weights
   size_cap <- 5000
   df_nullsampsize <- df %>% filter(is.na(sample_size) == TRUE)
   
-  impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode) {
+  impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode, cycle) {
     df <- data_frame # Copy data frame
     df_pollst <- df %>% filter(pollster == .env$pollster)
     df_mode <- df %>% filter(mode == .env$mode)
@@ -124,13 +128,13 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
       return (median(df$sample_size))
     }
     else {
-      df_cycle <- df_og %>% filter(cycle == cycle)
+      df_cycle <- df_og %>% filter(cycle == cycle) %>% filter(is.na(sample_size) == FALSE)
       return (median(df_cycle$sample_size))
     }
   }
   
-  impute_sample_size_dfnullsampsize <- function(pollster, mode) {
-    return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsamplesize, pollster, mode))
+  impute_sample_size_dfnullsampsize <- function(pollster, mode, cycle) {
+    return(impute_sample_size(df %>% select(pollster, mode, cycle, sample_size), df_nullsamplesize, pollster, mode, cycle))
   }
   
   df <- df %>% filter(is.na(sample_size) == FALSE) # TODO: handle null sample size polls
@@ -139,7 +143,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   
   if (dim(df_nullsampsize)[1] != 0) {
     df_nullsampsize <- df_nullsampsize %>% rowwise() %>%
-      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode)) %>%
+      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode, cycle)) %>%
       ungroup()
     
     df <- bind_rows(df, df_nullsampsize)
@@ -195,6 +199,10 @@ avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
   df <- data_frame
   
   df_weights <- poll_avg(data_frame, cycle, state, seat_number, candidate)
+  #if ((state == "Rhode Island") & (cycle == 2024)) {
+    # Debug
+    #View(df_weights)
+  #}
   avg <- sum(df_weights$total_weight * df_weights$pct)
   std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
   lower_ci <- avg - 1.96*std
@@ -279,7 +287,7 @@ poll_avg_1416 <- function(data_frame, cycle, location, candidate, cand_1or2) {
   size_cap <- 5000
   df_nullsampsize <- df %>% filter(is.na(sample_size) == TRUE)
   
-  impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode) {
+  impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode, cycle) {
     df <- data_frame # Copy data frame
     df_pollst <- df %>% filter(pollster == .env$pollster)
     df_mode <- df %>% filter(mode == .env$mode)
@@ -294,13 +302,13 @@ poll_avg_1416 <- function(data_frame, cycle, location, candidate, cand_1or2) {
       return (median(df$sample_size))
     }
     else {
-      df_cycle <- df_og %>% filter(cycle == cycle)
+      df_cycle <- df_og %>% filter(cycle == cycle) %>% filter(is.na(sample_size) == FALSE)
       return (median(df_cycle$sample_size))
     }
   }
   
-  impute_sample_size_dfnullsampsize <- function(pollster, mode) {
-    return(impute_sample_size(df %>% select(pollster, mode, sample_size), df_nullsamplesize, pollster, mode))
+  impute_sample_size_dfnullsampsize <- function(pollster, mode, cycle) {
+    return(impute_sample_size(df %>% select(pollster, mode, cycle, sample_size), df_nullsamplesize, pollster, mode, cycle))
   }
   
   df <- df %>% filter(is.na(sample_size) == FALSE)
@@ -309,7 +317,7 @@ poll_avg_1416 <- function(data_frame, cycle, location, candidate, cand_1or2) {
   
   if (dim(df_nullsampsize)[1] != 0) {
     df_nullsampsize <- df_nullsampsize %>% rowwise() %>%
-      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode)) %>%
+      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode, cycle)) %>%
       ungroup()
     
     df <- bind_rows(df, df_nullsampsize)

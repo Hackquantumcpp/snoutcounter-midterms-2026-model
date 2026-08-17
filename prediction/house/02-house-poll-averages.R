@@ -120,7 +120,7 @@ poll_avg <- function(data_frame, state, seat_number, candidate) {
       return (median(df$sample_size))
     }
     else {
-      df_cycle <- df_og %>% filter(cycle == cycle)
+      df_cycle <- df_og %>% filter(is.na(sample_size) == FALSE)
       return (median(df_cycle$sample_size))
     }
   }
