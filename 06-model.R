@@ -28,7 +28,7 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
                      dem_scandal_score + rep_scandal_score,
                    family = gaussian(),
                    data = data,
-                   prior = normal(0, 4, autoscale = TRUE),
+                   prior = student_t(location = 0, scale = 4, df = 5, autoscale = TRUE),
                    adapt_delta = 0.99,
                    refresh = 10,
                    iter = 5000*2,
