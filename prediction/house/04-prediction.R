@@ -41,6 +41,18 @@ data <- data %>% mutate(
   sims = lapply(index, function(index) posterior[, index])
 )
 
+posinterv <- as_tibble(posterior_interval(posterior, prob = 0.95))
+
+posinterv <- posinterv %>% janitor::clean_names() %>% rename(
+  low = x2_5_percent,
+  hi = x97_5_percent
+)
+
+data <- data %>% mutate(
+  ci_low = posinterv$low + 50,
+  ci_hi = posinterv$hi + 50
+)
+
 ggplot(data = data, mapping = aes(x = y_pred, y = chance)) + geom_point() +
   labs(
     x = "Predicted values",
