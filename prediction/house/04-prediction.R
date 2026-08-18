@@ -50,3 +50,4 @@ ggplot(data = data, mapping = aes(x = y_pred, y = chance)) + geom_point() +
 ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
 
 saveRDS(data, '../../model_output/house_predictions.RDS')
+saveRDS(posterior, '../../model_output/house_posterior.RDS')
