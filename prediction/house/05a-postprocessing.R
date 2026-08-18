@@ -24,6 +24,8 @@ mean_seats_tot <- mean_seats + as.numeric(dim(dem_uncont)[1])
 
 chamber_win_chance <- mean(tot_seats_sims > thres) * 100
 
+saveRDS(tot_seats_sims, "model_output/tot_seats_sims.RDS")
+
 ## Time series (model output over time)
 
 run_date <- today()
@@ -42,10 +44,10 @@ output <- output %>% add_row(date = run_date, y = mean_seats_tot, geo = "US Hous
   add_row(date = run_date, y = chamber_win_chance, geo = "US House", type = "chance") %>%
   add_row(date = run_date, y = sd_seats, geo = "US House", type = "seats_sd")
 
-seat_level_out <- data %>% select(cd, y_pred, y_pred_sd, chance) %>% mutate(
+seat_level_out <- data %>% select(cd, y_pred, y_pred_sd, chance, ci_low, ci_hi) %>% mutate(
   date = run_date
 ) %>% pivot_longer(
-  cols = c(y_pred, y_pred_sd, chance),
+  cols = c(y_pred, y_pred_sd, chance, ci_low, ci_hi),
   names_to = "type",
   values_to = "y"
 ) %>% rename(geo = cd)
