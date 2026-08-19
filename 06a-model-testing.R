@@ -27,7 +27,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3100)
+set.seed(3200)
 
 train_data <- data %>% sample_frac(0.67)
 
@@ -39,11 +39,11 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
                      #(1 | state) + #(1 | year) +
                       (1 | census_region:year) + sqrt_effn:poll_margin + 
-                     dem_scandal_score + rep_scandal_score,
+                     net_scandal_score,
                    family = gaussian(),
                    data = train_data,
                    prior = student_t(location = 0, scale = 4, df = 5, autoscale = TRUE),
-                   adapt_delta = 0.99,
+                   adapt_delta = 0.95,
                    refresh = 10,
                    iter = 5000*2,
                    seed = 1010

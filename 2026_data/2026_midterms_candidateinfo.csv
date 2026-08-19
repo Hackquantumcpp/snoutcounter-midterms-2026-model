@@ -86,34 +86,34 @@
 84,CT-04,Jim Himes,Michael Goldstein,True,False
 85,CT-05,Jahana Hayes,Chris Shea,True,False
 86,DE-AL,Sarah McBride,,True,False
-87,FL-01,,Jimmy Patronis,False,True
-88,FL-02,,,False,False
+87,FL-01,Gay Valimont,Jimmy Patronis,False,True
+88,FL-02,Amanda Green,Austin Rogers,False,False
 89,FL-03,Seth Harp,Kat Cammack,False,True
-90,FL-04,,Aaron Bean,False,True
+90,FL-04,LaShonda Holloway,Aaron Bean,False,True
 91,FL-05,Rachel Grage,John Rutherford,False,True
-92,FL-06,,Randy Fine,False,True
-93,FL-07,,Cory Mills,False,True
-94,FL-08,,Mike Haridopolos,False,True
-95,FL-09,Darren Soto,,True,False
+92,FL-06,Eric Yonce,Randy Fine,False,True
+93,FL-07,Bale Dalton,Ryan Elijah,False,False
+94,FL-08,Jennifer Jenkins,Mike Haridopolos,False,True
+95,FL-09,Darren Soto,Dan Green,True,False
 96,FL-10,Maxwell Frost,Not Contested,True,False
-97,FL-11,,,False,False
-98,FL-12,,Gus Bilirakis,False,True
-99,FL-13,,Anna Paulina Luna,False,True
-100,FL-14,Kathy Castor,,True,False
-101,FL-15,,Laurel Lee,False,True
-102,FL-16,,,False,False
-103,FL-17,,Greg Steube,False,True
-104,FL-18,,Scott Franklin,False,True
-105,FL-19,,,False,False
-106,FL-20,Debbie Wasserman Schultz,,True,False
-107,FL-21,,Brian Mast,False,True
-108,FL-22,,,False,False
-109,FL-23,Lois Frankel,,True,False
-110,FL-24,,,False,False
-111,FL-25,Jared Moskowitz,,True,False
-112,FL-26,,Mario Diaz-Balart,False,True
-113,FL-27,,Maria Elvira Salazar,False,True
-114,FL-28,,Carlos Gimenez,False,True
+97,FL-11,James Pericola,Joe Strada,False,False
+98,FL-12,Kimberly Overman,Gus Bilirakis,False,True
+99,FL-13,Leela Gray,Anna Paulina Luna,False,True
+100,FL-14,Kathy Castor,Mike Beltran,True,False
+101,FL-15,Robert People,Laurel Lee,False,True
+102,FL-16,Kelly Kirschner,Sydney Gruters,False,False
+103,FL-17,Matthew Montavon,Greg Steube,False,True
+104,FL-18,Curtis Gibson,Scott Franklin,False,True
+105,FL-19,Victor Arias,Jim Schwartzel,False,False
+106,FL-20,Debbie Wasserman Schultz,Brent Andersen,True,False
+107,FL-21,James Martin,Brian Mast,False,True
+108,FL-22,Pia Dandiya,Casey Askar,False,False
+109,FL-23,Lois Frankel,Deborah Adeimy,True,False
+110,FL-24,Oliver Gilbert,Te Mayonna Brown,False,False
+111,FL-25,Jared Moskowitz,Scott Singer,True,False
+112,FL-26,Nicole Locklin,Mario Diaz-Balart,False,True
+113,FL-27,Eliott Rodriguez,Maria Elvira Salazar,False,True
+114,FL-28,Phil Ehr,Carlos Gimenez,False,True
 115,GA-01,Amanda Hollowell,Jim Kingston,False,False
 116,GA-02,Sanford Bishop,Matt Day,True,False
 117,GA-03,Maura Keller,Brian Jack,False,True
@@ -177,7 +177,7 @@
 175,LA-03,,Clay Higgins,False,True
 176,LA-04,,Mike Johnson,False,True
 177,LA-05,,,False,False
-178,LA-06,Cleo Fields,,True,False
+178,LA-06,,,False,False
 179,MA-01,Richard Neal,,True,False
 180,MA-02,Jim McGovern,,True,False
 181,MA-03,Lori Trahan,Gary Grossi,True,False
@@ -433,4 +433,4 @@
 431,WI-08,Rick Crosson,Tony Wied,False,True
 432,WV-01,Vince George,Carol Miller,False,True
 433,WV-02,Ace Parsi,Riley Moore,False,True
-434,WY-AL,Lisa Kinney,,False,False
+434,WY-AL,Lisa Kinney,Chuck Gray,False,False
