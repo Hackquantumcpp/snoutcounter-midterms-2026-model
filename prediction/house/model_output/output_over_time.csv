@@ -1,6 +1,6 @@
 date,y,geo,type
 2026-08-18,231.4394,US House,seats
-2026-08-18,67.215,US House,chance
+2026-08-18,69.085,US House,chance
 2026-08-18,23.952050281252205,US House,seats_sd
 2026-08-18,45.2405503685503,AK-AL,y_pred
 2026-08-18,3.6840725389427487,AK-AL,y_pred_sd

@@ -22,7 +22,7 @@ sd_seats <- sd(tot_seats_sims)
 
 mean_seats_tot <- mean_seats + as.numeric(dim(dem_uncont)[1])
 
-chamber_win_chance <- mean(tot_seats_sims > thres) * 100
+chamber_win_chance <- mean(tot_seats_sims >= thres) * 100
 
 saveRDS(tot_seats_sims, "model_output/tot_seats_sims.RDS")
 
