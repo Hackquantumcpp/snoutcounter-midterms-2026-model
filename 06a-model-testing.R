@@ -73,7 +73,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
                          "sqrt_effn:poll_margin", "college",
-                         "dem_scandal_score", "rep_scandal_score"))
+                         "dem_scandal_score", "rep_scandal_score", "net_scandal_score"))
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "funds_pct_margin",
@@ -82,7 +82,7 @@ rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",
                    "sqrt_effn:poll_margin", "college",
-                   "dem_scandal_score", "rep_scandal_score"))
+                   "dem_scandal_score", "rep_scandal_score", "net_scandal_score"))
 neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
