@@ -178,14 +178,17 @@ mcmc_dens_overlay(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
 mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
 mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
 neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
-                                    "dem_inc_dummy", "rep_inc_dummy",
-                                    "dem_funds_2p_pct_sqrd", #"cvap_hisp_pct", 
+                                    "dem_inc_dummy", "rep_inc_dummy", "baseline:sqrt_effn",
+                                    "funds_pct_margin", "inc_dummy", "baseline",
+                                    "inc_dummy:polarization", "funds_pct_margin:polarization",
                                     #"cvap_white_pct",
                                     #"cvap_black_pct", "cvap_aapi_pct",
                                     "sqrt_effn:poll_margin", #"college",
                                     "dem_scandal_score", "rep_scandal_score"))
-rhat(backtest_model, pars = c("pvi", "generic_ballot_avg",
+rhat(backtest_model, pars = c("pvi", "generic_ballot_avg", "baseline:sqrt_effn",
                               "dem_inc_dummy", "rep_inc_dummy",
+                              "funds_pct_margin", "inc_dummy", "baseline",
+                              "inc_dummy:polarization", "funds_pct_margin:polarization",
                               "dem_funds_2p_pct_sqrd",
                               "sqrt_effn:poll_margin",
                               "dem_scandal_score", "rep_scandal_score"))
@@ -194,15 +197,17 @@ neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
                                     "Sigma[state:(Intercept),(Intercept)]",
-                                    "Sigma[census_region:(Intercept),(Intercept)]",
-                                    "Sigma[demo_cluster:(Intercept),(Intercept)]"))
+                                    "Sigma[census_region:year:(Intercept),(Intercept)]",
+                                    "Sigma[demo_cluster:year:(Intercept),(Intercept)]"))
 rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
                                     "Sigma[rep_cand:(Intercept),(Intercept)]",
                                     "Sigma[year:(Intercept),(Intercept)]",
                                     "Sigma[state:year:(Intercept),(Intercept)]",
                                     "Sigma[state:(Intercept),(Intercept)]",
                               "Sigma[census_region:(Intercept),(Intercept)]",
-                              "Sigma[demo_cluster:(Intercept),(Intercept)]"))
+                              "Sigma[demo_cluster:(Intercept),(Intercept)]",
+                              "Sigma[census_region:year:(Intercept),(Intercept)]",
+                              "Sigma[demo_cluster:year:(Intercept),(Intercept)]"))
 
 poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
 
