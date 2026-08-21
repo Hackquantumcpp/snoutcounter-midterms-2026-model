@@ -1,2 +1,2 @@
-,cd,dem_cand,rep_cand,dem_inc_any,rep_inc_any
-60,CA-40,Not Contested,Young Kim/Ken Calvert,False,True
+,cd,dem_cand,rep_cand,dem_inc_any,rep_inc_any,state_po,district_number,fips,geoid
+60,CA-40,Not Contested,Young Kim/Ken Calvert,False,True,CA,40,06,0640
