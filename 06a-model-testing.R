@@ -27,13 +27,13 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3200)
+set.seed(3300)
 
 train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
-fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                      (1 | demo_cluster:year) +
                      funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
@@ -69,7 +69,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "inc_dummy", "dem_funds_2p_pct_offset",
                          "generic_ballot_avg", "funds_pct_margin",
                          "funds_pct_margin:polarization", "inc_dummy:polarization",
-                         "cvap_hisp_pct", 
+                         "cvap_hisp_pct", "baseline:sqrt_effn",
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
                          "sqrt_effn:poll_margin", "college",
@@ -78,7 +78,7 @@ rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "funds_pct_margin",
                    "funds_pct_margin:polarization", "inc_dummy:polarization",
-                   "cvap_hisp_pct", 
+                   "cvap_hisp_pct", "baseline:sqrt_effn",
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",
                    "sqrt_effn:poll_margin", "college",
@@ -148,7 +148,7 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + 
+backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                                 (1 | demo_cluster:year) +
                                 funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
                                 (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
@@ -158,9 +158,9 @@ backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
                                      family = gaussian(),
                                      data = pre24,
                                      prior = normal(0, 4, autoscale = TRUE),
-                                     adapt_delta = 0.99,
+                                     adapt_delta = 0.95,
                                      refresh = 100,
-                                     iter = 5000*2,
+                                     iter = 1000*2,
                                      seed = 1010
 )
 print(backtest_model)
