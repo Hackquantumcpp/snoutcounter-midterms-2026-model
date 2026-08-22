@@ -154,7 +154,7 @@ backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:basel
                                 (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
                                 #(1 | state) + #(1 | year) +
                                 (1 | census_region:year) + sqrt_effn:poll_margin + 
-                                dem_scandal_score + rep_scandal_score,
+                                net_scandal_score,
                                      family = gaussian(),
                                      data = pre24,
                                      prior = normal(0, 4, autoscale = TRUE),

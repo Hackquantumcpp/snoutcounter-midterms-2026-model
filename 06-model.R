@@ -20,7 +20,7 @@ data <- data %>% mutate(
   funds_pct_margin = if_else(dem_tot_funds + rep_tot_funds == 0, 0, (dem_tot_funds - rep_tot_funds) / (dem_tot_funds + rep_tot_funds)) * 100
 )
 
-fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline +
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                      funds_pct_margin + inc_dummy +
                      polarization:funds_pct_margin + polarization:inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) +  (1 | demo_cluster:year) + (1 | year) +
@@ -50,7 +50,7 @@ mcmc_dens_overlay(fit, pars = c("generic_ballot_avg",
                                 "dem_funds_2p_pct_sqrd")) + ylab('density')
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
 neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", "baseline",
-                         "inc_dummy", "dem_funds_2p_pct_offset",
+                         "inc_dummy", "dem_funds_2p_pct_offset", "baseline:sqrt_effn",
                          "generic_ballot_avg", "funds_pct_margin",
                          "funds_pct_margin:polarization", "inc_dummy:polarization",
                          "cvap_hisp_pct", 
@@ -59,7 +59,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "sqrt_effn:poll_margin", "college",
                          "dem_scandal_score", "rep_scandal_score",
                          "net_scandal_score"))
-rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
+rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline", "baseline:sqrt_effn",
                    "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "funds_pct_margin",
                    "funds_pct_margin:polarization", "inc_dummy:polarization",
