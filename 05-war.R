@@ -16,14 +16,14 @@ data <- data %>% mutate(
   over_under = dem_pct_2p - dem_2p_prev
 )
 
-war_model <- stan_glmer( over_under ~ inc_dummy + lagged_pres_swing + is_midterm:shave + funds_pct_margin +
+war_model <- stan_glmer( over_under ~ 0 + inc_dummy + lagged_pres_swing + is_midterm:shave + funds_pct_margin +
                            (1 | dem_cand) + (1 | rep_cand) + # Our WAR metrics
                            (1 | state:year) + (1 | demo_cluster:year) +
                            (1 | year), ## Comment out if there is only one year in data
                          family = gaussian(),
                          data = data,
                          prior = student_t(location = 0, scale = 4, df = 5, autoscale = TRUE),
-                         adapt_delta = 0.95,
+                         adapt_delta = 0.99,
                          refresh = 10,
                          iter = 1000*2,
                          seed = 1010
