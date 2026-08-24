@@ -27,13 +27,13 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3300)
+set.seed(3400)
 
 train_data <- data %>% sample_frac(0.67)
 
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 
-fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
+fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline + polarization:baseline +
                      (1 | demo_cluster:year) +
                      funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
@@ -69,6 +69,8 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "inc_dummy", "dem_funds_2p_pct_offset",
                          "generic_ballot_avg", "funds_pct_margin",
                          "funds_pct_margin:polarization", "inc_dummy:polarization",
+                         "polarization:funds_pct_margin", "polarization:inc_dummy",
+                         "baseline:polarization",
                          "cvap_hisp_pct", "baseline:sqrt_effn",
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
@@ -77,6 +79,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
 rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "funds_pct_margin",
+                   "baseline:polarization",
                    "funds_pct_margin:polarization", "inc_dummy:polarization",
                    "cvap_hisp_pct", "baseline:sqrt_effn",
                    "cvap_natam_pct",
