@@ -27,7 +27,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3500)
+set.seed(3600)
 
 train_data <- data %>% sample_frac(0.67)
 
@@ -38,6 +38,8 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline + #pola
                      funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
                      #(1 | dem_cand) + (1 | rep_cand) + 
                      dem_over_under + rep_over_under +
+                     sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
+                     sqrt_effn:dem_over_under + sqrt_effn:rep_over_under +
                      (1 | state:year) + (1 | year) +
                      #(1 | state) + #(1 | year) +
                       (1 | census_region:year) + sqrt_effn:poll_margin + 
@@ -72,9 +74,11 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "generic_ballot_avg", "funds_pct_margin",
                          "funds_pct_margin:polarization", "inc_dummy:polarization",
                          "polarization:funds_pct_margin", "polarization:inc_dummy",
+                         "sqrt_effn:inc_dummy", "sqrt_effn:funds_pct_margin", "sqrt_effn:net_scandal_score",
+                         "sqrt_effn:dem_over_under", "sqrt_effn:rep_over_under",
                          "baseline:polarization",
                          "cvap_hisp_pct", "baseline:sqrt_effn",
-                         "cvap_natam_pct",
+                         "cvap_natam_pct", "dem_over_under", "rep_over_under",
                          "cvap_black_pct", "cvap_aapi_pct",
                          "sqrt_effn:poll_margin", "college",
                          "dem_scandal_score", "rep_scandal_score", "net_scandal_score"))
@@ -83,8 +87,10 @@ rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
                    "generic_ballot_avg", "funds_pct_margin",
                    "baseline:polarization",
                    "funds_pct_margin:polarization", "inc_dummy:polarization",
+                   "sqrt_effn:inc_dummy", "sqrt_effn:funds_pct_margin", "sqrt_effn:net_scandal_score",
+                   "sqrt_effn:dem_over_under", "sqrt_effn:rep_over_under",
                    "cvap_hisp_pct", "baseline:sqrt_effn",
-                   "cvap_natam_pct",
+                   "cvap_natam_pct", "dem_over_under", "rep_over_under",
                    "cvap_black_pct", "cvap_aapi_pct",
                    "sqrt_effn:poll_margin", "college",
                    "dem_scandal_score", "rep_scandal_score", "net_scandal_score"))
@@ -156,7 +162,9 @@ data_24 <- data %>% filter(year == 2024)
 backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                                 (1 | demo_cluster:year) +
                                 funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
-                                (1 | dem_cand) + (1 | rep_cand) + (1 | state:year) + (1 | year) +
+                                #(1 | dem_cand) + (1 | rep_cand) + 
+                                dem_over_under + rep_over_under +
+                                (1 | state:year) + (1 | year) +
                                 #(1 | state) + #(1 | year) +
                                 (1 | census_region:year) + sqrt_effn:poll_margin + 
                                 net_scandal_score,
@@ -186,6 +194,7 @@ neff_ratio(backtest_model, pars = c("pvi", "generic_ballot_avg",
                                     "dem_inc_dummy", "rep_inc_dummy", "baseline:sqrt_effn",
                                     "funds_pct_margin", "inc_dummy", "baseline",
                                     "inc_dummy:polarization", "funds_pct_margin:polarization",
+                                    "dem_over_under", "rep_over_under",
                                     #"cvap_white_pct",
                                     #"cvap_black_pct", "cvap_aapi_pct",
                                     "sqrt_effn:poll_margin", #"college",
@@ -194,6 +203,7 @@ rhat(backtest_model, pars = c("pvi", "generic_ballot_avg", "baseline:sqrt_effn",
                               "dem_inc_dummy", "rep_inc_dummy",
                               "funds_pct_margin", "inc_dummy", "baseline",
                               "inc_dummy:polarization", "funds_pct_margin:polarization",
+                              "dem_over_under", "rep_over_under",
                               "dem_funds_2p_pct_sqrd",
                               "sqrt_effn:poll_margin",
                               "dem_scandal_score", "rep_scandal_score"))
