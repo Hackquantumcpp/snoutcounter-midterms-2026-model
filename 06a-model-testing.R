@@ -27,7 +27,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3600)
+set.seed(3700)
 
 train_data <- data %>% sample_frac(0.67)
 
@@ -36,10 +36,10 @@ test_data <- anti_join(data, train_data, by=c("year", "state_po", "district"))
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline + #polarization:baseline +
                      (1 | demo_cluster:year) +
                      funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
-                     #(1 | dem_cand) + (1 | rep_cand) + 
-                     dem_over_under + rep_over_under +
+                     (1 | dem_cand) + (1 | rep_cand) + 
+                     #dem_over_under + rep_over_under +
                      sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
-                     sqrt_effn:dem_over_under + sqrt_effn:rep_over_under +
+                     #sqrt_effn:dem_over_under + sqrt_effn:rep_over_under +
                      (1 | state:year) + (1 | year) +
                      #(1 | state) + #(1 | year) +
                       (1 | census_region:year) + sqrt_effn:poll_margin + 
