@@ -25,6 +25,7 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                      polarization:funds_pct_margin + polarization:inc_dummy +
                      (1 | dem_cand) + (1 | rep_cand) +  (1 | demo_cluster:year) + (1 | year) +
                      (1 | state:year) + (1 | census_region:year) + sqrt_effn:poll_margin +
+                     sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
                      net_scandal_score,
                    family = gaussian(),
                    data = data,
@@ -53,6 +54,7 @@ neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", 
                          "inc_dummy", "dem_funds_2p_pct_offset", "baseline:sqrt_effn",
                          "generic_ballot_avg", "funds_pct_margin",
                          "funds_pct_margin:polarization", "inc_dummy:polarization",
+                         "sqrt_eff:inc_dummy", "sqrt_effn:funds_pct_margin", "sqrt_effn:net_scandal_score",
                          "cvap_hisp_pct", 
                          "cvap_natam_pct",
                          "cvap_black_pct", "cvap_aapi_pct",
@@ -63,6 +65,7 @@ rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline", "baselin
                    "inc_dummy", "dem_funds_2p_pct_offset",
                    "generic_ballot_avg", "funds_pct_margin",
                    "funds_pct_margin:polarization", "inc_dummy:polarization",
+                   "sqrt_eff:inc_dummy", "sqrt_effn:funds_pct_margin", "sqrt_effn:net_scandal_score",
                    "cvap_hisp_pct", 
                    "cvap_natam_pct",
                    "cvap_black_pct", "cvap_aapi_pct",

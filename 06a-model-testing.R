@@ -159,11 +159,13 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
+backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline + #polarization:baseline +
                                 (1 | demo_cluster:year) +
                                 funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
-                                #(1 | dem_cand) + (1 | rep_cand) + 
-                                dem_over_under + rep_over_under +
+                                (1 | dem_cand) + (1 | rep_cand) + 
+                                #dem_over_under + rep_over_under +
+                                sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
+                                #sqrt_effn:dem_over_under + sqrt_effn:rep_over_under +
                                 (1 | state:year) + (1 | year) +
                                 #(1 | state) + #(1 | year) +
                                 (1 | census_region:year) + sqrt_effn:poll_margin + 
@@ -173,7 +175,7 @@ backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:basel
                                      prior = normal(0, 4, autoscale = TRUE),
                                      adapt_delta = 0.95,
                                      refresh = 100,
-                                     iter = 1000*2,
+                                     iter = 2000*2,
                                      seed = 1010
 )
 print(backtest_model)
