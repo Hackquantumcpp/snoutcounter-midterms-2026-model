@@ -26,6 +26,13 @@ chamber_win_chance <- mean(tot_seats_sims >= thres) * 100
 
 saveRDS(tot_seats_sims, "model_output/tot_seats_sims.RDS")
 
+topline_stats <- tibble(
+  vars = c("means_seats_tot", "chamber_win_chance"),
+  x = c(mean_seats_tot, chamber_win_chance)
+)
+
+write_csv(topline_stats, "display_data/topline_stats.csv")
+
 ## Time series (model output over time)
 
 run_date <- today()
