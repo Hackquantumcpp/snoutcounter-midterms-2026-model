@@ -1,0 +1,1 @@
+This repository contains the source code and data for the models that power the 2026 SnoutCounter midterms forecasts. This currently contains the model powering the House forecast, while the models for the Senate and gubernatorial forecasts will are in the works.
