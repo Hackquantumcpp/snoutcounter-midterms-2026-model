@@ -91,4 +91,4 @@ rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
 
 pp_check(fit, nreps = 100)
 
-saveRDS(fit, "model/house_model.RDS")
+saveRDS(fit, "model/house_model.RDS")      
