@@ -1,0 +1,3 @@
+year,state,state_po,state_fips,state_cen,state_ic,office,district,stage,runoff,special,candidate,party_detailed,writein,mode,candidatevotes,totalvotes,unofficial,version,party_simplified
+2022,Connecticut,CT,9,16,1,US SENATE,statewide,GEN,FALSE,FALSE,RICHARD BLUMENTHAL,DEMOCRAT/WORKING FAMILIES,FALSE,TOTAL,723864,1259807,FALSE,20260920,DEMOCRAT
+2022,Connecticut,CT,9,16,1,US SENATE,statewide,GEN,FALSE,FALSE,LEORA LEVY,REPUBLICAN,FALSE,TOTAL,535943,1259807,FALSE,20260920,REPUBLICAN
