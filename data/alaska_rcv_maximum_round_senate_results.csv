@@ -1,0 +1,3 @@
+year,state,state_po,state_cen,state_ic,office,district,stage,runoff,special,candidate,party_detailed,writein,mode,candidatevotes,totalvotes,unofficial,version,party_simplified
+2022,ALASKA,AK,2,94,81,US HOUSE,0,GEN,FALSE,"MURKOWSKI, LISA",REPUBLICAN,FALSE,TOTAL,136330,253864,FALSE,20230920,REPUBLICAN
+2022,ALASKA,AK,2,94,81,US HOUSE,0,GEN,FALSE,"TSHIBAKA, KELLY C.",REPUBLICAN,FALSE,TOTAL,117534,253864,FALSE,20230920,REPUBLICAN
