@@ -178,14 +178,14 @@
 176,LA-04,,Mike Johnson,False,True
 177,LA-05,,,False,False
 178,LA-06,,,False,False
-179,MA-01,Richard Neal,,True,False
-180,MA-02,Jim McGovern,,True,False
+179,MA-01,Richard Neal,Not Contested,True,False
+180,MA-02,Jim McGovern,Not Contested,True,False
 181,MA-03,Lori Trahan,Gary Grossi,True,False
 182,MA-04,Jake Auchincloss,Tom Stalcup,True,False
-183,MA-05,Katherine Clark,,True,False
-184,MA-06,,Micah Jones,False,False
-185,MA-07,Ayanna Pressley,,True,False
-186,MA-08,Stephen Lynch,,True,False
+183,MA-05,Katherine Clark,Not Contested,True,False
+184,MA-06,Dan Koh,Micah Jones,False,False
+185,MA-07,Ayanna Pressley,Not Contested,True,False
+186,MA-08,Stephen Lynch,Robert Burke,True,False
 187,MA-09,Bill Keating,Tyler MacAllister,True,False
 188,MD-01,Dan Schwartz,Andy Harris,False,True
 189,MD-02,Johnny Olszewski,Dave Wallace,True,False
