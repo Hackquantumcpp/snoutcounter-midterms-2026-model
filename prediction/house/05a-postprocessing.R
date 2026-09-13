@@ -63,6 +63,8 @@ output <- bind_rows(output, seat_level_out)
 
 write_csv(output, "model_output/output_over_time.csv")
 
+write_csv(output, '../../../snoutcounter/datasets/house_forecast_2026_output_over_time.csv')
+
 ## Tipping point calculation
 
 postibble <- as_tibble(posterior)
