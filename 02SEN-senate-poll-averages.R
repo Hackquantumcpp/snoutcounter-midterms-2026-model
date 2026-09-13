@@ -4,6 +4,7 @@ library(rstan)
 library(rstanarm)
 library(DescTools)
 library(readxl)
+library(broom.mixed)
 
 banned_pollsters <- c("ActiVote",
                       "Trafalgar Group", 
@@ -201,118 +202,55 @@ poll_avg <- function(data_frame, cycle, state, candidate) {
   return(df)
 }
 
-avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
+avg_final <- function(data_frame, cycle, state, candidate) {
   df <- data_frame
   
-  df_weights <- poll_avg(data_frame, cycle, state, seat_number, candidate)
+  df_weights <- poll_avg(data_frame, cycle, state, candidate)
   #if ((state == "Rhode Island") & (cycle == 2024)) {
   # Debug
   #View(df_weights)
   #}
-  
-  missing_cols <- c() ## Misnomer; columns are not actually "missing" but only have one level 
-  if (length(unique(df_weights$pollster)) <= 1) {
-    missing_cols <- c(missing_cols, "pollster")
-  }
-  if (length(unique(df_weights$methodology)) <= 1) {
-    missing_cols <- c(missing_cols, "methodology")
-  }
-  if (length(unique(df_weights$partisan)) <= 1) {
-    missing_cols <- c(missing_cols, "partisan")
-  }
-  if (length(unique(df_weights$population)) <= 1) {
-    missing_cols <- c(missing_cols, "population")
-  }
-  if (length(unique(df_weights$sponsor_candidate)) <= 1) {
-    missing_cols <- c(missing_cols, "sponsor_candidate")
+
+  if (nrow(df_weights) <= 1) {
+    avg <- sum(df_weights$total_weight * df_weights$pct)
+    std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
+    lower_ci <- avg - 1.96*std
+    upper_ci <- avg + 1.96*std
   }
   
-  avg <- sum(df_weights$total_weight * df_weights$pct)
-  
-  df_weights <- df_weights %>% mutate(cand_avg = avg)
-  
-  if (length(missing_cols) == 0) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) + (1 | partisan) + (1 | population) +
-                        (1 | methodology) + (1 | sponsor_candidate) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 1 & 'partisan' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) + (1 | population) +
-                        (1 | methodology) + (1 | sponsor_candidate) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 1 & 'population' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) + (1 | partisan) +
-                        (1 | methodology) + (1 | sponsor_candidate) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 1 & 'methodology' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) + (1 | partisan) + (1 | population) +
-                        (1 | sponsor_candidate) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 1 & 'pollster' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 +  (1 | partisan) + (1 | population) +
-                        (1 | methodology) + (1 | sponsor_candidate) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 2 & 'partisan' %in% missing_cols & 'population' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) +
-                        (1 | methodology) + (1 | sponsor_candidate) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 2 & 'sponsor_candidate' %in% missing_cols & 'partisan' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) + (1 | population)
-                        (1 | methodology) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
-  } else if (length(missing_cols) == 2 & 'sponsor_candidate' %in% missing_cols & 'partisan' %in% missing_cols) {
-    fit <- stan_glmer(pct ~ 0 + (1 | pollster) + (1 | population)
-                      (1 | methodology) + cand_avg,
-                      family = gaussian(),
-                      data = polls,
-                      prior = normal(0, 1, autoscale = TRUE),
-                      prior_covariance = decov(scale = 0.50),
-                      adapt_delta = 0.99,
-                      refresh = 100,
-                      seed = 1010)
+  else {  
+    usable_cols <- possible_re_cols[sapply(possible_re_cols, function(col) {
+      col %in% names(polls) && length(unique(polls[[col]])) > 1
+    })]
+    missing_cols <- setdiff(possible_re_cols, usable_cols) ## Misnomer, columns are not actually "missing" but only have one level
+    
+    avg <- sum(df_weights$total_weight * df_weights$pct)
+    
+    df_weights <- df_weights %>% mutate(cand_avg = avg)
+    
+    raneff_terms <- paste0("(1 | ", usable_cols, ")" )
+    formula_str <- paste("pct ~ 0 +", paste(raneff_terms, collapse = " + "), "+ cand_avg")
+    
+    message(paste("Running average for", cycle, state, "SEN, Candidate:", candidate))
+    if (length(missing_cols) > 0) {
+      message("Dropped (missing or single-level): ", paste(missing_cols, collapse = ", "))
+    }
+    
+    fit <- stan_glmer( as.formula(formula_str),
+                       family = gaussian(),
+                       data = df_weights,
+                       prior = normal(0, 1, autoscale = TRUE),
+                       prior_covariance = decov(scale = 0.50),
+                       adapt_delta = 0.99,
+                       refresh = 100,
+                       seed = 1010
+    )
+    
+    tidy_raneffs <- tidy(fit, effects = "ran_vals") %>% select(group, level, estimate)
+    pop_a <- tidy_raneffs %>% filter(group == 'population' & level == 'lv') %>% pull(estimate)
+    np_a <- tidy_raneffs %>% filter(group == 'partisan' & level == 'NA') %>% pull(estimate)
+    nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
   }
-  
   
   std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
   lower_ci <- avg - 1.96*std
