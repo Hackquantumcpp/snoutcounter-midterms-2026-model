@@ -250,6 +250,20 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     pop_a <- tidy_raneffs %>% filter(group == 'population' & level == 'lv') %>% pull(estimate)
     np_a <- tidy_raneffs %>% filter(group == 'partisan' & level == 'NA') %>% pull(estimate)
     nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
+    
+    sign_flip_cols <- intersect(c("pollster", "methodology"), usable_cols)
+    
+    ## pop_a, np_a, and nospon_a are numeric(0) when group is not present
+    adj_cols <- c("population", "partisan", "sponsor_candidate") 
+    for (col in sign_flip_cols) {
+      col_adj_name <- paste0(col, "_adj")
+      rel_re <- tidy_raneffs %>% filter(group == col) %>% 
+        transmute(!!col := level, !!adj_name := -1 * estimate)
+      df_weights <- left_join(df_weights, rel_re, by = col)
+      adj_cols <- c(adj_cols, col_adj_name)
+    }
+    
+    
   }
   
   std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
