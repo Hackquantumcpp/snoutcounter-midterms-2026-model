@@ -5,6 +5,7 @@ library(rstanarm)
 library(DescTools)
 library(readxl)
 library(broom.mixed)
+library(progressr)
 
 options(mc.cores = parallel::detectCores(logical = FALSE))
 
@@ -212,6 +213,8 @@ avg_final <- function(data_frame, cycle, state, candidate) {
   # Debug
   #View(df_weights)
   #}
+  
+  message(paste("Running average for", cycle, state, "SEN, Candidate:", candidate))
 
   if (nrow(df_weights) <= 1) {
     avg <- sum(df_weights$total_weight * df_weights$pct)
@@ -227,14 +230,38 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     })]
     missing_cols <- setdiff(all_cols, usable_cols) ## Misnomer, columns are not actually "missing" but only have one level
     
-    avg <- sum(df_weights$total_weight * df_weights$pct)
+    date_interv <- seq(min(df_weights$end_date), max(df_weights$end_date), by = "day")
     
-    df_weights <- df_weights %>% mutate(cand_avg = avg)
+    avg_oneday <- function(date) {
+      df_weights_onday <- poll_avg(data_frame %>% filter(mdy(end_date) <= date), cycle, state, candidate)
+      #print(paste(date, dim(data_frame %>% filter(mdy(end_date) <= date))))
+      avg <- sum(df_weights_onday$total_weight * df_weights_onday$pct)
+      std <- sqrt(sum(df_weights_onday$total_weight * (df_weights_onday$pct - avg)^2))
+      lower_ci <- avg - 1.96*std
+      upper_ci <- avg + 1.96*std
+      return(list(cand_avg = avg,
+                  std = std,
+                  lower_ci = lower_ci,
+                  upper_ci = upper_ci))
+    }
+    
+    with_progress({
+      p <- progressor(along = date_interv)
+      
+      df_avg <- bind_cols(
+        tibble(end_date = date_interv),
+        map_dfr(date_interv, function(d) {
+          p()
+          avg_oneday(d)
+        })
+      )
+    })
+    
+    df_weights <- df_weights %>% left_join(df_avg %>% select(end_date, cand_avg), join_by(end_date))
     
     raneff_terms <- paste0("(1 | ", usable_cols, ")" )
     formula_str <- paste("pct ~ 0 +", paste(raneff_terms, collapse = " + "), "+ cand_avg")
     
-    message(paste("Running average for", cycle, state, "SEN, Candidate:", candidate))
     if (length(missing_cols) > 0) {
       message("Dropped (missing or single-level): ", paste(missing_cols, collapse = ", "))
     }
@@ -297,9 +324,22 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     
   }
   
-  std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
-  lower_ci <- avg - 1.96*std
-  upper_ci <- avg + 1.96*std
+  with_progress({
+    p <- progressor(along = date_interv)
+    
+    df_avg_final <- bind_cols(
+      tibble(end_date = date_interv),
+      map_dfr(date_interv, function(d) {
+        p()
+        avg_oneday(d)
+      })
+    )
+  })
+  
+  avg <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(cand_avg)
+  std <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(std)
+  lower_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(lower_ci)
+  upper_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(upper_ci)
   
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*pollscore + 1,
