@@ -6,6 +6,8 @@ library(DescTools)
 library(readxl)
 library(broom.mixed)
 
+options(mc.cores = parallel::detectCores(logical = FALSE))
+
 banned_pollsters <- c("ActiVote",
                       "Trafalgar Group", 
                       "Trafalgar Group/InsiderAdvantage",
@@ -219,10 +221,11 @@ avg_final <- function(data_frame, cycle, state, candidate) {
   }
   
   else {  
-    usable_cols <- possible_re_cols[sapply(possible_re_cols, function(col) {
-      col %in% names(polls) && length(unique(polls[[col]])) > 1
+    all_cols <- c("pollster", "partisan", "population", "methodology", "sponsor_candidate")
+    usable_cols <- all_cols[sapply(all_cols, function(col) {
+      col %in% names(df_weights) && length(unique(df_weights[[col]])) > 1
     })]
-    missing_cols <- setdiff(possible_re_cols, usable_cols) ## Misnomer, columns are not actually "missing" but only have one level
+    missing_cols <- setdiff(all_cols, usable_cols) ## Misnomer, columns are not actually "missing" but only have one level
     
     avg <- sum(df_weights$total_weight * df_weights$pct)
     
@@ -252,16 +255,44 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
     
     sign_flip_cols <- intersect(c("pollster", "methodology"), usable_cols)
+    other_cols <- intersect(c("population", "partisan", "sponsor_candidate"), usable_cols)
     
-    ## pop_a, np_a, and nospon_a are numeric(0) when group is not present
-    adj_cols <- c("population", "partisan", "sponsor_candidate") 
+    adj_cols <- c() 
     for (col in sign_flip_cols) {
       col_adj_name <- paste0(col, "_adj")
       rel_re <- tidy_raneffs %>% filter(group == col) %>% 
-        transmute(!!col := level, !!adj_name := -1 * estimate)
+        transmute(!!col := level, !!col_adj_name := -1 * estimate)
       df_weights <- left_join(df_weights, rel_re, by = col)
       adj_cols <- c(adj_cols, col_adj_name)
     }
+    
+    for (col in other_cols) {
+      col_adj_name <- paste0(col, "_adj")
+      rel_re <- tidy_raneffs %>% filter(group == col) %>% 
+        transmute(!!col := level, !!col_adj_name := estimate)
+      df_weights <- left_join(df_weights, rel_re, by = col)
+      if (col == "population") {
+        df_weights <- df_weights %>% mutate(population_adj = pop_a - population_adj)
+      }
+      else if (col == "partisan") {
+        df_weights <- df_weights %>% mutate(partisan_adj = np_a - partisan_adj)
+      }
+      else {
+        df_weights <- df_weights %>% mutate(sponsor_candidate_adj = nospon_a - sponsor_candidate_adj)
+      }
+      adj_cols <- c(adj_cols, col_adj_name)
+    }
+    
+    if (length(adj_cols) > 0) {
+      df_weights <- df_weights %>%
+        mutate(across(all_of(adj_cols), ~ ifelse(is.na(.x), 0, .x)))
+      df_weights$tot_adj <- rowSums(df_weights[, adj_cols, drop = FALSE])
+    } else {
+      df_weights$tot_adj <- 0
+    }
+    
+    df_weights <- df_weights %>% mutate(pct = pct + tot_adj)
+    avg <- sum(df_weights$total_weight * df_weights$pct)
     
     
   }
@@ -284,11 +315,11 @@ avg_final <- function(data_frame, cycle, state, candidate) {
 }
 
 unique_cands <- unique(
-  polls %>% select(cycle, state, seat_number, candidate_name, party)
+  polls %>% select(cycle, state, candidate_name, party)
 )
 
 cand_averages <- unique_cands %>% mutate(
-  output = pmap(list(cycle, state, seat_number, candidate_name), function(cycle, state, seat_number, candidate_name) {
-    return (avg_final(polls, cycle, state, seat_number, candidate_name))
+  output = pmap(list(cycle, state, candidate_name), function(cycle, state, candidate_name) {
+    return (avg_final(polls, cycle, state, candidate_name))
   })
 ) %>% unnest_wider(output)
