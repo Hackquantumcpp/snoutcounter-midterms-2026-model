@@ -257,7 +257,8 @@ avg_final <- function(data_frame, cycle, state, candidate) {
       )
     })
     
-    df_weights <- df_weights %>% left_join(df_avg %>% select(end_date, cand_avg), join_by(end_date))
+    df_weights <- df_weights %>% left_join(df_avg %>% select(end_date, cand_avg), join_by(end_date)) %>% 
+      mutate(partisan = coalesce(partisan, "NA"), sponsor_candidatze = coalesce(sponsor_candidate, "NA"))
     
     raneff_terms <- paste0("(1 | ", usable_cols, ")" )
     formula_str <- paste("pct ~ 0 +", paste(raneff_terms, collapse = " + "), "+ cand_avg")
