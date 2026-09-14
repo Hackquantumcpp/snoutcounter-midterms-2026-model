@@ -289,7 +289,8 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     for (col in sign_flip_cols) {
       col_adj_name <- paste0(col, "_adj")
       rel_re <- tidy_raneffs %>% filter(group == col) %>% 
-        transmute(!!col := level, !!col_adj_name := -1 * estimate)
+        transmute(!!col := level, !!col_adj_name := -1 * estimate) %>%
+        mutate(pollster = str_remove(pollster, "_"))
       df_weights <- left_join(df_weights, rel_re, by = col)
       adj_cols <- c(adj_cols, col_adj_name)
     }
