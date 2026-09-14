@@ -224,7 +224,7 @@ avg_final <- function(data_frame, cycle, state, candidate) {
   }
   
   else {  
-    all_cols <- c("pollster", "partisan", "population", "methodology", "sponsor_candidate")
+    all_cols <- c("pollster", "partisan", "population", "mode", "sponsor_candidate")
     usable_cols <- all_cols[sapply(all_cols, function(col) {
       col %in% names(df_weights) && length(unique(df_weights[[col]])) > 1
     })]
