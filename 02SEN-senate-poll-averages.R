@@ -215,6 +215,10 @@ avg_final <- function(data_frame, cycle, state, candidate) {
   #}
   
   message(paste("Running average for", cycle, state, "SEN, Candidate:", candidate))
+  
+  if (state == "Vermont") {
+    print("hello")
+  }
 
   if (nrow(df_weights) <= 1) {
     avg <- sum(df_weights$total_weight * df_weights$pct)
@@ -230,7 +234,7 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     })]
     missing_cols <- setdiff(all_cols, usable_cols) ## Misnomer, columns are not actually "missing" but only have one level
     
-    date_interv <- seq(min(df_weights$end_date), max(df_weights$end_date), by = "day")
+    date_interv <- sort(unique(df_weights$end_date))
     
     avg_oneday <- function(date) {
       df_weights_onday <- poll_avg(data_frame %>% filter(mdy(end_date) <= date), cycle, state, candidate)
