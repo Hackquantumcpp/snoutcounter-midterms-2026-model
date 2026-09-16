@@ -215,10 +215,6 @@ avg_final <- function(data_frame, cycle, state, candidate) {
   #}
   
   message(paste("Running average for", cycle, state, "SEN, Candidate:", candidate))
-  
-  if (state == "Vermont") {
-    print("hello")
-  }
 
   if (nrow(df_weights) <= 1) {
     avg <- sum(df_weights$total_weight * df_weights$pct)
@@ -267,95 +263,105 @@ avg_final <- function(data_frame, cycle, state, candidate) {
     raneff_terms <- paste0("(1 | ", usable_cols, ")" )
     formula_str <- paste("pct ~ 0 +", paste(raneff_terms, collapse = " + "), "+ cand_avg")
     
-    if (length(missing_cols) > 0) {
-      message("Dropped (missing or single-level): ", paste(missing_cols, collapse = ", "))
+    if (length(usable_cols) == 0) {
+      avg <- df_avg %>% filter(end_date == max(df_avg$end_date)) %>% pull(cand_avg)
+      std <- df_avg %>% filter(end_date == max(df_avg$end_date)) %>% pull(std)
+      lower_ci <- df_avg %>% filter(end_date == max(df_avg$end_date)) %>% pull(lower_ci)
+      upper_ci <- df_avg %>% filter(end_date == max(df_avg$end_date)) %>% pull(upper_ci)
     }
     
-    fit <- stan_glmer( as.formula(formula_str),
-                       family = gaussian(),
-                       data = df_weights,
-                       prior = normal(0, 1, autoscale = TRUE),
-                       prior_covariance = decov(scale = 0.50),
-                       adapt_delta = 0.99,
-                       refresh = 100,
-                       seed = 1010
-    )
+    else {
     
-    tidy_raneffs <- tidy(fit, effects = "ran_vals") %>% select(group, level, estimate)
-    pop_a <- tidy_raneffs %>% filter(group == 'population' & level == 'lv') %>% pull(estimate)
-    np_a <- tidy_raneffs %>% filter(group == 'partisan' & level == 'NA') %>% pull(estimate)
-    nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
-    
-    sign_flip_cols <- intersect(c("pollster", "mode"), usable_cols)
-    other_cols <- intersect(c("population", "partisan", "sponsor_candidate"), usable_cols)
-    
-    adj_cols <- c() 
-    for (col in sign_flip_cols) {
-      
-      #rel_re <- tidy_raneffs %>% filter(group == col) %>% 
-      #  transmute(!!col := level, !!col_adj_name := -1 * estimate) %>%
-      #  mutate(pollster = str_remove(pollster, "_"))
-      if (col == "pollster") {
-        raneffs = ranef(fit)$pollster
-        df_weights <- df_weights %>% left_join( (rownames_to_column(raneffs)) %>% 
-                                                  rename(pollster = rowname, house_effect = "(Intercept)") %>%
-                                                  mutate(house_effect = -1 * house_effect), join_by(pollster))
-        col_adj_name <- "house_effect"
-      }
-      else {
-        raneffs = ranef(fit)$mode
-        df_weights <- df_weights %>% left_join( (rownames_to_column(raneffs)) %>% 
-                                                  rename(mode = rowname, mode_effect = "(Intercept)") %>%
-                                                  mutate(mode_effect = -1 * mode_effect), join_by(mode))
-        col_adj_name <- "mode_effect"
+      if (length(missing_cols) > 0) {
+        message("Dropped (missing or single-level): ", paste(missing_cols, collapse = ", "))
       }
       
-      adj_cols <- c(adj_cols, col_adj_name)
-    }
-    
-    for (col in other_cols) {
-      col_adj_name <- paste0(col, "_adj")
-      rel_re <- tidy_raneffs %>% filter(group == col) %>% 
-        transmute(!!col := level, !!col_adj_name := estimate)
-      df_weights <- left_join(df_weights, rel_re, by = col)
-      if (col == "population") {
-        df_weights <- df_weights %>% mutate(population_adj = pop_a - population_adj)
-      }
-      else if (col == "partisan") {
-        df_weights <- df_weights %>% mutate(partisan_adj = np_a - partisan_adj)
-      }
-      else {
-        df_weights <- df_weights %>% mutate(sponsor_candidate_adj = nospon_a - sponsor_candidate_adj)
-      }
-      adj_cols <- c(adj_cols, col_adj_name)
-    }
-    
-    if (length(adj_cols) > 0) {
-      df_weights <- df_weights %>%
-        mutate(across(all_of(adj_cols), ~ ifelse(is.na(.x), 0, .x)))
-      df_weights$tot_adj <- rowSums(df_weights[, adj_cols, drop = FALSE])
-    } else {
-      df_weights$tot_adj <- 0
-    }
-    
-    df_weights <- df_weights %>% mutate(pct = pct + tot_adj)
-    
-    with_progress({
-      p <- progressor(along = date_interv)
-      
-      df_avg_final <- bind_cols(
-        tibble(end_date = date_interv),
-        map_dfr(date_interv, function(d) {
-          p()
-          avg_oneday(d)
-        })
+      fit <- stan_glmer( as.formula(formula_str),
+                         family = gaussian(),
+                         data = df_weights,
+                         prior = normal(0, 1, autoscale = TRUE),
+                         prior_covariance = decov(scale = 0.50),
+                         adapt_delta = 0.99,
+                         refresh = 100,
+                         seed = 1010
       )
-    })
-    
-    avg <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(cand_avg)
-    std <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(std)
-    lower_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(lower_ci)
-    upper_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(upper_ci)
+      
+      tidy_raneffs <- tidy(fit, effects = "ran_vals") %>% select(group, level, estimate)
+      pop_a <- tidy_raneffs %>% filter(group == 'population' & level == 'lv') %>% pull(estimate)
+      np_a <- tidy_raneffs %>% filter(group == 'partisan' & level == 'NA') %>% pull(estimate)
+      nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
+      
+      sign_flip_cols <- intersect(c("pollster", "mode"), usable_cols)
+      other_cols <- intersect(c("population", "partisan", "sponsor_candidate"), usable_cols)
+      
+      adj_cols <- c() 
+      for (col in sign_flip_cols) {
+        
+        #rel_re <- tidy_raneffs %>% filter(group == col) %>% 
+        #  transmute(!!col := level, !!col_adj_name := -1 * estimate) %>%
+        #  mutate(pollster = str_remove(pollster, "_"))
+        if (col == "pollster") {
+          raneffs = ranef(fit)$pollster
+          df_weights <- df_weights %>% left_join( (rownames_to_column(raneffs)) %>% 
+                                                    rename(pollster = rowname, house_effect = "(Intercept)") %>%
+                                                    mutate(house_effect = -1 * house_effect), join_by(pollster))
+          col_adj_name <- "house_effect"
+        }
+        else {
+          raneffs = ranef(fit)$mode
+          df_weights <- df_weights %>% left_join( (rownames_to_column(raneffs)) %>% 
+                                                    rename(mode = rowname, mode_effect = "(Intercept)") %>%
+                                                    mutate(mode_effect = -1 * mode_effect), join_by(mode))
+          col_adj_name <- "mode_effect"
+        }
+        
+        adj_cols <- c(adj_cols, col_adj_name)
+      }
+      
+      for (col in other_cols) {
+        col_adj_name <- paste0(col, "_adj")
+        rel_re <- tidy_raneffs %>% filter(group == col) %>% 
+          transmute(!!col := level, !!col_adj_name := estimate)
+        df_weights <- left_join(df_weights, rel_re, by = col)
+        if (col == "population") {
+          df_weights <- df_weights %>% mutate(population_adj = pop_a - population_adj)
+        }
+        else if (col == "partisan") {
+          df_weights <- df_weights %>% mutate(partisan_adj = np_a - partisan_adj)
+        }
+        else {
+          df_weights <- df_weights %>% mutate(sponsor_candidate_adj = nospon_a - sponsor_candidate_adj)
+        }
+        adj_cols <- c(adj_cols, col_adj_name)
+      }
+      
+      if (length(adj_cols) > 0) {
+        df_weights <- df_weights %>%
+          mutate(across(all_of(adj_cols), ~ ifelse(is.na(.x), 0, .x)))
+        df_weights$tot_adj <- rowSums(df_weights[, adj_cols, drop = FALSE])
+      } else {
+        df_weights$tot_adj <- 0
+      }
+      
+      df_weights <- df_weights %>% mutate(pct = pct + tot_adj)
+      
+      with_progress({
+        p <- progressor(along = date_interv)
+        
+        df_avg_final <- bind_cols(
+          tibble(end_date = date_interv),
+          map_dfr(date_interv, function(d) {
+            p()
+            avg_oneday(d)
+          })
+        )
+      })
+      
+      avg <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(cand_avg)
+      std <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(std)
+      lower_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(lower_ci)
+      upper_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(upper_ci)
+    }
     
   }
   
