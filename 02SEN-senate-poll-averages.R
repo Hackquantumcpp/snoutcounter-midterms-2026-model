@@ -22,7 +22,9 @@ filepath <- "data/polls/senate_polls_historical.csv"
 polls <- read_csv(filepath)
 
 polls <- polls %>% filter(!(display_name %in% banned_pollsters)) %>%
-  filter(stage == "general" & hypothetical == FALSE)
+  filter(stage %in% c("general", "runoff") & hypothetical == FALSE)
+
+polls <- polls %>% mutate(stage == "general")
 
 polls <- polls %>% filter(
   party %in% c("DEM", "REP") | candidate_name %in% c("Angus S. King Jr.", "Dan Osborn",
