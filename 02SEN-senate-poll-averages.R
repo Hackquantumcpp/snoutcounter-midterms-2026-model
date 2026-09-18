@@ -283,7 +283,7 @@ avg_final <- function(data_frame, cycle, state, candidate) {
                          data = df_weights,
                          prior = normal(0, 1, autoscale = TRUE),
                          prior_covariance = decov(scale = 0.50),
-                         adapt_delta = 0.99,
+                         adapt_delta = 0.999,
                          refresh = 100,
                          seed = 1010
       )
@@ -291,6 +291,9 @@ avg_final <- function(data_frame, cycle, state, candidate) {
       tidy_raneffs <- tidy(fit, effects = "ran_vals") %>% select(group, level, estimate)
       pop_a <- tidy_raneffs %>% filter(group == 'population' & level == 'lv') %>% pull(estimate)
       np_a <- tidy_raneffs %>% filter(group == 'partisan' & level == 'NA') %>% pull(estimate)
+      if (!('NA' %in% (tidy_raneffs %>% filter(group == 'partisan'))$level)) {
+        np_a <- 0
+      }
       nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
       
       sign_flip_cols <- intersect(c("pollster", "mode"), usable_cols)
@@ -380,6 +383,8 @@ avg_final <- function(data_frame, cycle, state, candidate) {
            "effn" = sum(df_weights$effn)))
 }
 
+#avg_final(polls, 2018, 'Nebraska', 'Jane Raybould') ## DEBUG
+
 unique_cands <- unique(
   polls %>% select(cycle, state, candidate_name, party)
 )
@@ -389,3 +394,5 @@ cand_averages <- unique_cands %>% mutate(
     return (avg_final(polls, cycle, state, candidate_name))
   })
 ) %>% unnest_wider(output)
+
+write_csv(cand_averages, "transformed/senate_polling_averages.csv")
