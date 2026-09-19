@@ -564,7 +564,7 @@ avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
   
   message(paste("Running average for", year, location, "SEN, Candidate:", candidate))
   
-  flag <- FALSE
+  flag <- TRUE
   
   if (nrow(df_weights) <= 1 | flag == TRUE) { ## In all honesty, there probably aren't enough polls in the dataset to justify the "fancy" averages anyways
     avg <- sum(df_weights$total_weight * df_weights$pct)
@@ -670,6 +670,11 @@ avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
         }
         
         adj_cols <- c(adj_cols, col_adj_name)
+      }
+      
+      if (location == 'CO') {
+        View(tidy_raneffs)
+        print(other_cols)
       }
       
       for (col in other_cols) {
