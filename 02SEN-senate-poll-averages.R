@@ -396,3 +396,370 @@ cand_averages <- unique_cands %>% mutate(
 ) %>% unnest_wider(output)
 
 write_csv(cand_averages, "transformed/senate_polling_averages.csv")
+
+
+############### 2014-16 Senate polling #############################
+
+polls_1416 <- read_csv('transformed/polls_silver_wrangled.csv')
+
+ratings_14 <- read_csv('data/ratings/pollster_ratings_silver.csv') %>% janitor::clean_names()
+
+polls_1416 <- polls_1416 %>% mutate(
+  internal = coalesce(if_else((sponsor == cand1_name | sponsor == cand2_name | sponsor == 'unspecified Democratic sponsor' | sponsor == 'unspecified Republican sponsor'), TRUE, FALSE), FALSE)
+) %>% mutate(
+  partisan = coalesce(partisan, "NA")
+) %>% mutate(
+  partisan = recode(partisan, "D" = "DEM", "R" = "REP")
+)
+
+polls_1416 <- polls_1416 %>% rowwise() %>%
+  mutate(sponsor_candidate = if_else(internal == TRUE, sponsor, "NA")) %>%
+  ungroup() %>%
+  mutate(sponsor_candidate = recode(sponsor_candidate, "unspecified Democratic sponsor" = "NA",
+                                    'unspecified Republican sponsor' = "NA"))
+
+polls_1416_sen <- polls_1416 %>% filter(!(pollster %in% banned_pollsters)) %>%
+  filter((year %in% c(2014, 2016)) & (type_simple == 'Sen-G')) %>% rename(
+    sample_size = samplesize
+  )
+
+polls_in_window_1416 <- function(data_frame, date, pid) {
+  df <- data_frame # Copy data frame
+  
+  thres = date - 14
+  df <- df %>% filter(poll_spon_id == pid & polldate >= thres)
+  return(max(dim(df)[1], 1)) ## REMEMBER, IMPORTANT, NOT ZERO INDEXED IN R!!!
+}
+
+poll_avg_1416 <- function(data_frame, cycle, location, candidate, cand_1or2) {
+  # Copy data frame, filter for all those less than given date
+  df_og <- data_frame
+  if (cand_1or2 == 1) {
+    df_og <- df_og %>% rename(
+      candidate_name = cand1_name,
+      pct = cand1_pct
+    )
+  }
+  else {
+    df_og <- df_og %>% rename(
+      candidate_name = cand2_name,
+      pct = cand2_pct
+    )
+  }
+  
+  df <- df_og %>% filter(year == cycle,
+                         location == .env$location,
+                         candidate_name == candidate)
+  
+  # Wrangling
+  df <- df %>% mutate(
+    polldate = ymd(polldate),
+    electiondate = ymd(electiondate)
+  )
+  
+  df <- df %>%
+    mutate(population = recode(population, "LV" = "b", "RV" = "c", "A" = "e")) %>% 
+    arrange(population) %>% 
+    distinct(poll_id_nate, .keep_all = TRUE) %>% 
+    mutate(population = recode(population, "b" = "LV", "c" = "RV", "e" = "A"))
+  
+  ### Sample size weights
+  size_cap <- 5000
+  df_nullsampsize <- df %>% filter(is.na(sample_size) == TRUE)
+  
+  impute_sample_size <- function(data_frame, data_frame_nullsampsize, pollster, mode, cycle) {
+    df <- data_frame # Copy data frame
+    df_pollst <- df %>% filter(pollster == .env$pollster)
+    df_mode <- df %>% filter(mode == .env$mode)
+    
+    if (nrow(df_pollst) != 0) {
+      return(median(df_pollst$sample_size))
+    }
+    else if (nrow(df_mode) != 0) {
+      return (median(df_mode$sample_size))
+    }
+    else if (any(!is.na(df$sample_size))) {
+      return (median(df$sample_size))
+    }
+    else {
+      df_cycle <- df_og %>% filter(cycle == cycle) %>% filter(is.na(sample_size) == FALSE)
+      return (median(df_cycle$sample_size))
+    }
+  }
+  
+  impute_sample_size_dfnullsampsize <- function(pollster, mode, cycle) {
+    return(impute_sample_size(df %>% select(pollster, mode, cycle, sample_size), df_nullsamplesize, pollster, mode, cycle))
+  }
+  
+  df <- df %>% filter(is.na(sample_size) == FALSE)
+  df <- df %>% mutate(sample_size_winsr = pmin(sample_size, size_cap))
+  df <- df %>% mutate(sample_size_winsr = Winsorize(sample_size_winsr, val = quantile(sample_size_winsr, probs = c(0.025, 0.975), na.rm = FALSE)))
+  
+  if (dim(df_nullsampsize)[1] != 0) {
+    df_nullsampsize <- df_nullsampsize %>% rowwise() %>%
+      mutate(sample_size_winsr = impute_sample_size_dfnullsampsize(pollster, mode, cycle)) %>%
+      ungroup()
+    
+    df <- bind_rows(df, df_nullsampsize)
+  }
+  
+  df <- df %>% mutate(sample_size_weight = sqrt(pmin(sample_size_winsr, size_cap)) / sqrt(median(pmin(sample_size_winsr, size_cap))))
+  
+  ### Quality weights
+  ## For 2014-16, retroactively apply 2026 pollster ratings
+  df <- df %>% left_join(
+    ratings_14, join_by(pollster)
+  )
+  df <- df %>%
+    mutate(
+      pollscore = coalesce(predictive_plus_minus, 1),
+      # quality_weight = if_else(predictive_plus_minus < 0.5, exp(-predictive_plus_minus/1.3), 0.2)
+      quality_weight = if_else(predictive_plus_minus <= 1, sqrt(1/2.4 * (1 - pollscore)) + 0.2, 0.2)    
+    )
+  
+  pid_in_window <- function(polldate, pid) {
+    return(polls_in_window_1416(df, polldate, pid))
+  }
+  
+  ## Multiple polls in short window weights
+  df <- df %>% group_by(pollster) %>%
+    mutate(poll_spon_id = cur_group_id()) %>%
+    ungroup()
+  df <- df %>% rowwise() %>% mutate(zone_flood_weight = 1 / sqrt(pid_in_window(polldate, poll_spon_id))) %>%
+   ungroup()
+  
+  ### Recency weight
+  window <- 30
+  df <- df %>% mutate(recency_weight = 0.1^(as.numeric(electiondate - polldate, units = "days")/window))
+  
+  ## Partisan downweight
+  partisan_dw <- 0.8
+  df <- df %>% mutate(
+    partisan_downweight = if_else(is.na(partisan), 1, partisan_dw)
+  )
+  
+  ## Internal downweight
+  internal_dw <- 0.5 / 0.8
+  df <- df %>% mutate(
+    internal_downweight = if_else(internal == TRUE, internal_dw, 1)
+  ) %>% mutate(
+    internal_downweight = replace_na(1)
+  )
+  
+  ### Bring it all together
+  df <- df %>% mutate(total_weight = sample_size_weight * quality_weight * recency_weight * partisan_downweight * internal_downweight)
+  df$total_weight <- df$total_weight / sum(df$total_weight)
+  
+  return(df)
+}
+
+avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
+  df <- data_frame
+  
+  df_weights <- poll_avg_1416(data_frame, year, location, candidate, cand_1or2)
+  #if ((state == "Rhode Island") & (cycle == 2024)) {
+  # Debug
+  #View(df_weights)
+  #}
+  
+  message(paste("Running average for", year, location, "SEN, Candidate:", candidate))
+  
+  flag <- FALSE
+  
+  if (nrow(df_weights) <= 1 | flag == TRUE) { ## In all honesty, there probably aren't enough polls in the dataset to justify the "fancy" averages anyways
+    avg <- sum(df_weights$total_weight * df_weights$pct)
+    std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
+    lower_ci <- avg - 1.96*std
+    upper_ci <- avg + 1.96*std
+  }
+  
+  else {  
+    all_cols <- c("pollster", "partisan", "population", "sponsor_candidate")
+    usable_cols <- all_cols[sapply(all_cols, function(col) {
+      col %in% names(df_weights) && length(unique(df_weights[[col]])) > 1
+    })]
+    missing_cols <- setdiff(all_cols, usable_cols) ## Misnomer, columns are not actually "missing" but only have one level
+    
+    date_interv <- sort(unique(df_weights$polldate))
+    
+    avg_oneday <- function(date) {
+      df_weights_onday <- poll_avg_1416(data_frame %>% filter(mdy(polldate) <= date), year, location, candidate, cand_1or2)
+      #print(paste(date, dim(data_frame %>% filter(mdy(end_date) <= date))))
+      avg <- sum(df_weights_onday$total_weight * df_weights_onday$pct)
+      std <- sqrt(sum(df_weights_onday$total_weight * (df_weights_onday$pct - avg)^2))
+      lower_ci <- avg - 1.96*std
+      upper_ci <- avg + 1.96*std
+      return(list(cand_avg = avg,
+                  std = std,
+                  lower_ci = lower_ci,
+                  upper_ci = upper_ci))
+    }
+    
+    with_progress({
+      p <- progressor(along = date_interv)
+      
+      df_avg <- bind_cols(
+        tibble(polldate = date_interv),
+        map_dfr(date_interv, function(d) {
+          p()
+          avg_oneday(d)
+        })
+      )
+    })
+    
+    df_weights <- df_weights %>% left_join(df_avg %>% select(polldate, cand_avg), join_by(polldate)) %>% 
+      mutate(partisan = coalesce(partisan, "NA"), sponsor_candidate = coalesce(sponsor_candidate, "NA"))
+    
+    raneff_terms <- paste0("(1 | ", usable_cols, ")" )
+    formula_str <- paste("pct ~ 0 +", paste(raneff_terms, collapse = " + "), "+ cand_avg")
+    
+    if (length(usable_cols) == 0) {
+      avg <- df_avg %>% filter(polldate == max(df_avg$polldate)) %>% pull(cand_avg)
+      std <- df_avg %>% filter(polldate == max(df_avg$polldate)) %>% pull(std)
+      lower_ci <- df_avg %>% filter(polldate == max(df_avg$polldate)) %>% pull(lower_ci)
+      upper_ci <- df_avg %>% filter(polldate == max(df_avg$polldate)) %>% pull(upper_ci)
+    }
+    
+    else {
+      
+      if (length(missing_cols) > 0) {
+        message("Dropped (missing or single-level): ", paste(missing_cols, collapse = ", "))
+      }
+      
+      fit <- stan_glmer( as.formula(formula_str),
+                         family = gaussian(),
+                         data = df_weights,
+                         prior = normal(0, 1, autoscale = TRUE),
+                         prior_covariance = decov(scale = 0.50),
+                         adapt_delta = 0.999,
+                         refresh = 100,
+                         seed = 1010
+      )
+      
+      tidy_raneffs <- tidy(fit, effects = "ran_vals") %>% select(group, level, estimate)
+      pop_a <- tidy_raneffs %>% filter(group == 'population' & level == 'lv') %>% pull(estimate)
+      np_a <- tidy_raneffs %>% filter(group == 'partisan' & level == 'NA') %>% pull(estimate)
+      if (!('NA' %in% (tidy_raneffs %>% filter(group == 'partisan'))$level)) {
+        np_a <- 0
+      }
+      nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
+      
+      sign_flip_cols <- intersect(c("pollster"), unique(tidy_raneffs$group))
+      other_cols <- intersect(c("population", "partisan", "sponsor_candidate"), unique(tidy_raneffs$group))
+      print(sign_flip_cols)
+      
+      adj_cols <- c() 
+      for (col in sign_flip_cols) {
+        
+        #rel_re <- tidy_raneffs %>% filter(group == col) %>% 
+        #  transmute(!!col := level, !!col_adj_name := -1 * estimate) %>%
+        #  mutate(pollster = str_remove(pollster, "_"))
+        if (col == "pollster") {
+          raneffs = ranef(fit)$pollster
+          df_weights <- df_weights %>% left_join( (rownames_to_column(raneffs)) %>% 
+                                                    rename(pollster = rowname, house_effect = "(Intercept)") %>%
+                                                    mutate(house_effect = -1 * house_effect), join_by(pollster))
+          col_adj_name <- "house_effect"
+        }
+        else {
+          raneffs = ranef(fit)$mode
+          df_weights <- df_weights %>% left_join( (rownames_to_column(raneffs)) %>% 
+                                                    rename(mode = rowname, mode_effect = "(Intercept)") %>%
+                                                    mutate(mode_effect = -1 * mode_effect), join_by(mode))
+          col_adj_name <- "mode_effect"
+        }
+        
+        adj_cols <- c(adj_cols, col_adj_name)
+      }
+      
+      for (col in other_cols) {
+        col_adj_name <- paste0(col, "_adj")
+        rel_re <- tidy_raneffs %>% filter(group == col) %>% 
+          transmute(!!col := level, !!col_adj_name := estimate)
+        df_weights <- left_join(df_weights, rel_re, by = col)
+        if (col == "population") {
+          df_weights <- df_weights %>% mutate(population_adj = pop_a - population_adj)
+        }
+        else if (col == "partisan") {
+          df_weights <- df_weights %>% mutate(partisan_adj = np_a - partisan_adj)
+        }
+        else {
+          df_weights <- df_weights %>% mutate(sponsor_candidate_adj = nospon_a - sponsor_candidate_adj)
+        }
+        adj_cols <- c(adj_cols, col_adj_name)
+      }
+      
+      if (length(adj_cols) > 0) {
+        df_weights <- df_weights %>%
+          mutate(across(all_of(adj_cols), ~ ifelse(is.na(.x), 0, .x)))
+        df_weights$tot_adj <- rowSums(df_weights[, adj_cols, drop = FALSE])
+      } else {
+        df_weights$tot_adj <- 0
+      }
+      
+      df_weights <- df_weights %>% mutate(pct = pct + tot_adj)
+      
+      with_progress({
+        p <- progressor(along = date_interv)
+        
+        df_avg_final <- bind_cols(
+          tibble(polldate = date_interv),
+          map_dfr(date_interv, function(d) {
+            p()
+            avg_oneday(d)
+          })
+        )
+      })
+      
+      avg <- df_avg_final %>% filter(polldate == max(df_avg_final$polldate)) %>% pull(cand_avg)
+      std <- df_avg_final %>% filter(polldate == max(df_avg_final$polldate)) %>% pull(std)
+      lower_ci <- df_avg_final %>% filter(polldate == max(df_avg_final$polldate)) %>% pull(lower_ci)
+      upper_ci <- df_avg_final %>% filter(polldate == max(df_avg_final$polldate)) %>% pull(upper_ci)
+    }
+    
+  }
+  
+  df_weights <- df_weights %>% mutate(
+    effn_notime = -0.3*pollscore + 1,
+    time_adj = exp(-as.numeric(electiondate - polldate, units = "days")/30),
+    effn = effn_notime * time_adj * partisan_downweight * internal_downweight * zone_flood_weight
+  ) # Measure of "effective" number of polls
+  
+  return(c("avg" = avg, 
+           "std" = std, 
+           "lower_ci" = lower_ci, 
+           "upper_ci" = upper_ci,
+           "effn" = sum(df_weights$effn)))
+}
+
+unique_cand1s_1416 <- unique(
+  polls_1416_sen %>% select(year, location, cand1_name, cand1_party)
+)
+unique_cand2s_1416 <- unique(
+  polls_1416_sen %>% select(year, location, cand2_name, cand2_party)
+)
+cand_averages_1416_cand1s <- unique_cand1s_1416 %>% mutate(
+  output = pmap(list(year, location, cand1_name), function(cycle, location, candidate_name) {
+    return (avg_final_1416(polls_1416_sen, cycle, location, candidate_name, 1))
+  })
+) %>% unnest_wider(output)
+
+cand_averages_1416_cand2s <- unique_cand2s_1416 %>% mutate(
+  output = pmap(list(year, location, cand2_name), function(cycle, location, candidate_name) {
+    return (avg_final_1416(polls_1416_sen, cycle, location, candidate_name, 2))
+  })
+) %>% unnest_wider(output)
+
+cand_averages_1416_cand1s <- cand_averages_1416_cand1s %>% rename(
+  candidate_name = cand1_name,
+  party = cand1_party
+) 
+
+cand_averages_1416_cand2s <- cand_averages_1416_cand2s %>% rename(
+  candidate_name = cand2_name,
+  party = cand2_party
+) 
+
+cand_avgs_1416 <- bind_rows(cand_averages_1416_cand1s, cand_averages_1416_cand2s)
+
+write_csv(cand_avgs_1416, "transformed/senate_polling_averages_2014-16.csv")
