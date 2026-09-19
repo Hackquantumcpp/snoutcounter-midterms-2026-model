@@ -373,7 +373,7 @@ avg_final <- function(data_frame, cycle, state, candidate) {
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*pollscore + 1,
     time_adj = exp(-as.numeric(election_date - end_date, units = "days")/30),
-    effn = effn_notime * time_adj
+    effn = effn_notime * time_adj * partisan_downweight * internal_downweight * zone_flood_weight
   ) # Measure of "effective" number of polls
   
   return(c("avg" = avg, 
