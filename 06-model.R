@@ -50,7 +50,7 @@ mcmc_dens_overlay(fit, pars = c("pvi", "dem_inc_dummy",
 mcmc_dens_overlay(fit, pars = c("generic_ballot_avg", 
                                 "dem_funds_2p_pct_sqrd")) + ylab('density')
 mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
-neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", "baseline",
+neff_ratio(fit, pars = c("baseline",
                          "inc_dummy", "dem_funds_2p_pct_offset", "baseline:sqrt_effn",
                          "generic_ballot_avg", "funds_pct_margin",
                          "funds_pct_margin:polarization", "inc_dummy:polarization",
@@ -91,4 +91,4 @@ rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
 
 pp_check(fit, nreps = 100)
 
-saveRDS(fit, "model/house_model.RDS")      
+saveRDS(fit, "model/house_model.RDS")
