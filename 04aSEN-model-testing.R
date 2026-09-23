@@ -35,17 +35,16 @@ train_data <- bind_rows(data %>% filter(chamber == "House"), data %>% filter(cha
 test_data <- anti_join(data, train_data, by=c("year", "state_po", "geography", "chamber"))
 
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
-                     (1 | demo_cluster:year) +
-                     funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
-                     (1 | dem_cand) + (1 | rep_cand) + 
-                     sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
-                     (1 | state:year) + (1 | year) + (1 | chamber:year) +
-                     (1 | census_region:year) + sqrt_effn:poll_margin + 
-                     net_scandal_score,
+                     funds_pct_margin + inc_dummy +
+                     polarization:funds_pct_margin + polarization:inc_dummy +
+                     (1 | dem_cand) + (1 | rep_cand) +  (1 | demo_cluster:year) + (1 | year) +
+                     (1 | state:year) + (1 | census_region:year) + (1 | chamber:year) + 
+                     sqrt_effn:poll_margin + sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + 
+                     sqrt_effn:net_scandal_score + net_scandal_score,
                    family = gaussian(),
                    data = train_data,
                    prior = student_t(location = 0, scale = 4, df = 5, autoscale = TRUE),
-                   adapt_delta = 0.95,
+                   adapt_delta = 0.999,
                    refresh = 10,
                    iter = 5000*2,
                    seed = 1010
