@@ -50,3 +50,132 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                    seed = 1010
 )
 print(fit)
+
+## Tested random slopes + intercepts model
+## Little change to accuracy, but matters a lot in some districts
+## Tentative decision: do away with
+
+# Diagnostics
+mcmc_trace(fit, pars = c("pvi", "dem_inc_dummy",
+                         "rep_inc_dummy"))
+mcmc_trace(fit, pars = c("generic_ballot_avg", 'dem_funds_2p_pct_sqrd',
+                         'factor(year)2020', 'factor(year)2022'))
+mcmc_trace(as.array(fit), regex_pars = 'Sigma')
+mcmc_dens_overlay(fit, pars = c("pvi", "dem_inc_dummy",
+                                "rep_inc_dummy")) + ylab('density')
+mcmc_dens_overlay(fit, pars = c("generic_ballot_avg", 
+                                "dem_funds_2p_pct_sqrd")) + ylab('density')
+mcmc_dens_overlay(as.array(fit), regex_pars = 'Sigma') + ylab('density')
+neff_ratio(fit, pars = c("pvi", "prior_lean", "dem_inc_dummy", "rep_inc_dummy", "baseline",
+                         "inc_dummy", "dem_funds_2p_pct_offset",
+                         "generic_ballot_avg", "funds_pct_margin",
+                         "funds_pct_margin:polarization", "inc_dummy:polarization",
+                         "polarization:funds_pct_margin", "polarization:inc_dummy",
+                         "sqrt_effn:inc_dummy", "sqrt_effn:funds_pct_margin", "sqrt_effn:net_scandal_score",
+                         "sqrt_effn:dem_over_under", "sqrt_effn:rep_over_under",
+                         "baseline:polarization",
+                         "cvap_hisp_pct", "baseline:sqrt_effn",
+                         "cvap_natam_pct", "dem_over_under", "rep_over_under",
+                         "cvap_black_pct", "cvap_aapi_pct",
+                         "sqrt_effn:poll_margin", "college",
+                         "dem_scandal_score", "rep_scandal_score", "net_scandal_score"))
+rhat(fit, pars = c("pvi", "dem_inc_dummy", "rep_inc_dummy", "baseline",
+                   "inc_dummy", "dem_funds_2p_pct_offset",
+                   "generic_ballot_avg", "funds_pct_margin",
+                   "baseline:polarization",
+                   "funds_pct_margin:polarization", "inc_dummy:polarization",
+                   "sqrt_effn:inc_dummy", "sqrt_effn:funds_pct_margin", "sqrt_effn:net_scandal_score",
+                   "sqrt_effn:dem_over_under", "sqrt_effn:rep_over_under",
+                   "cvap_hisp_pct", "baseline:sqrt_effn",
+                   "cvap_natam_pct", "dem_over_under", "rep_over_under",
+                   "cvap_black_pct", "cvap_aapi_pct",
+                   "sqrt_effn:poll_margin", "college",
+                   "dem_scandal_score", "rep_scandal_score", "net_scandal_score"))
+neff_ratio(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                         "Sigma[rep_cand:(Intercept),(Intercept)]",
+                         "Sigma[year:(Intercept),(Intercept)]",
+                         "Sigma[state:year:(Intercept),(Intercept)]",
+                         "Sigma[state:(Intercept),(Intercept)]",
+                         "Sigma[census_region:year:(Intercept),(Intercept)]",
+                         "Sigma[demo_cluster:year:(Intercept),(Intercept)]",
+                         "Sigma[chamber:year:(Intercept),(Intercept)]"))
+rhat(fit, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                   "Sigma[rep_cand:(Intercept),(Intercept)]",
+                   "Sigma[year:(Intercept),(Intercept)]",
+                   "Sigma[state:year:(Intercept),(Intercept)]",
+                   "Sigma[state:(Intercept),(Intercept)]",
+                   "Sigma[census_region:(Intercept),(Intercept)]",
+                   "Sigma[census_region:year:(Intercept),(Intercept)]",
+                   "Sigma[demo_cluster:year:(Intercept),(Intercept)]",
+                   "Sigma[chamber:year:(Intercept),(Intercept)]"))
+
+# Validation
+
+y_hat <- posterior_predict(fit, newdata = test_data)
+
+pp_check(fit, nreps = 100)
+
+y_hat_mean <- colMeans(y_hat)
+
+y_hat_sd <- colSds(y_hat)
+
+y_act = test_data$dem_pct_2p_offset
+
+mae <- mean(abs(y_hat_mean - y_act))
+
+mde <- mean(y_hat_mean - y_act) # Directional
+
+fund_chances <- apply(y_hat, 2, \(x) mean(x > 0) * 100)
+
+test_data <- test_data %>% mutate(
+  y_pred = y_hat_mean + 50,
+  y_act = dem_pct_2p,
+  poster_sd = y_hat_sd
+) %>% mutate(
+  abs_err = abs(y_pred - y_act),
+  err = y_pred - y_act,
+  fund_chances = fund_chances
+) %>% mutate(
+  z = err / poster_sd
+)
+
+comp_mae <- mean((test_data %>% filter((y_pred >= 45 & y_pred <= 55) | (y_act >= 45 & y_act <= 55)))$abs_err)
+
+comp_mde <- mean((test_data %>% filter((y_pred >= 45 & y_pred <= 55) | (y_act >= 45 & y_act <= 55)))$err)
+
+ggplot() + geom_point(mapping = aes(x = y_hat_mean + 50, y = y_act + 50)) +
+  labs(
+    x = "Predicted values",
+    y = "Actual values",
+    title = "Predicted vs actual"
+  ) + xlim(40, 60) + ylim(35, 65)
+
+
+## Backtesting - 2024
+
+pre24 <- data %>% filter(year < 2024)
+
+data_24 <- data %>% filter(year == 2024)
+
+backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline + #polarization:baseline +
+                                (1 | demo_cluster:year) +
+                                funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
+                                (1 | dem_cand) + (1 | rep_cand) + 
+                                #dem_over_under + rep_over_under +
+                                sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
+                                #sqrt_effn:dem_over_under + sqrt_effn:rep_over_under +
+                                (1 | state:year) + (1 | year) +
+                                #(1 | state) + #(1 | year) +
+                                (1 | census_region:year) + sqrt_effn:poll_margin + 
+                                net_scandal_score,
+                              family = gaussian(),
+                              data = pre24,
+                              prior = normal(0, 4, autoscale = TRUE),
+                              adapt_delta = 0.95,
+                              refresh = 100,
+                              iter = 2000*2,
+                              seed = 1010
+)
+print(backtest_model)
+print(fixef(backtest_model))
+print(ranef(backtest_model))
