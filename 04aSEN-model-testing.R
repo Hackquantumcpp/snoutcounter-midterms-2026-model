@@ -229,8 +229,6 @@ tot_seats_sims <- apply(poster_2024, 1, \(x) sum(x > 0))
 
 y_act_2024 <- data_24$dem_pct_2p_offset
 
-mae <- mean(abs(y_hat_2024 - y_act_2024))
-
 data_24 <- data_24 %>% mutate(
   y_pred = y_hat_2024 + 50,
   y_act = dem_pct_2p,
@@ -267,5 +265,9 @@ ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
 View(data_24 %>% filter((y_act < 55 & y_act > 45) | (y_pred < 55 & y_pred > 45)) %>% select(year, district, dem_cand, rep_cand, y_pred, y_act, abs_err, fund_chances))
 
 data_24_sen <- data_24 %>% filter(chamber == "Senate")
+
+mae <- mean(data_24_sen$abs_err)
+
+mde <- mean(data_24_sen$err)
 
 write_csv(data_24_sen %>% select(-sims), "backtesting/backtesting_res_fundamentals_senate_2024.csv")
