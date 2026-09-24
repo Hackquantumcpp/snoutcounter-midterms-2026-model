@@ -157,17 +157,13 @@ pre24 <- data %>% filter(year < 2024)
 
 data_24 <- data %>% filter(year == 2024)
 
-backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline + #polarization:baseline +
-                                (1 | demo_cluster:year) +
-                                funds_pct_margin + inc_dummy + polarization:funds_pct_margin + polarization:inc_dummy +
-                                (1 | dem_cand) + (1 | rep_cand) + 
-                                #dem_over_under + rep_over_under +
-                                sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + sqrt_effn:net_scandal_score +
-                                #sqrt_effn:dem_over_under + sqrt_effn:rep_over_under +
-                                (1 | state:year) + (1 | year) +
-                                #(1 | state) + #(1 | year) +
-                                (1 | census_region:year) + sqrt_effn:poll_margin + 
-                                net_scandal_score,
+backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
+                                funds_pct_margin + inc_dummy +
+                                polarization:funds_pct_margin + polarization:inc_dummy +
+                                (1 | dem_cand) + (1 | rep_cand) +  (1 | demo_cluster:year) + (1 | year) +
+                                (1 | state:year) + (1 | census_region:year) + (1 | chamber:year) + 
+                                sqrt_effn:poll_margin + sqrt_effn:inc_dummy + sqrt_effn:funds_pct_margin + 
+                                sqrt_effn:net_scandal_score + net_scandal_score,
                               family = gaussian(),
                               data = pre24,
                               prior = normal(0, 4, autoscale = TRUE),
@@ -179,3 +175,97 @@ backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:basel
 print(backtest_model)
 print(fixef(backtest_model))
 print(ranef(backtest_model))
+
+mcmc_trace(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                    "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_trace(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
+                                    "cvap_black_pct", "cvap_aapi_pct"))
+mcmc_dens_overlay(backtest_model, pars = c("pvi", "generic_ballot_avg",
+                                           "dem_inc_dummy", "rep_inc_dummy"))
+mcmc_dens_overlay(backtest_model, pars = c("cvap_hisp_pct", "cvap_white_pct",
+                                           "cvap_black_pct", "cvap_aapi_pct"))
+mcmc_trace(as.array(backtest_model), regex_pars = "Sigma")
+mcmc_dens_overlay(as.array(backtest_model), regex_pars = "Sigma")
+neff_ratio(backtest_model, pars = c("baseline", "funds_pct_margin", "inc_dummy",
+                                    "net_scandal_score", "baseline:sqrt_effn",
+                                    "funds_pct_margin:polarization", "inc_dummy:polarization",
+                                    "sqrt_effn:poll_margin", "sqrt_effn:inc_dummy", "sqrt_effn:funds_pct_margin",
+                                    "sqrt_effn:net_scandal_score"))
+rhat(backtest_model, pars = c("baseline", "funds_pct_margin", "inc_dummy",
+                              "net_scandal_score", "baseline:sqrt_effn",
+                              "funds_pct_margin:polarization", "inc_dummy:polarization",
+                              "sqrt_effn:poll_margin", "sqrt_effn:inc_dummy", "sqrt_effn:funds_pct_margin",
+                              "sqrt_effn:net_scandal_score"))
+neff_ratio(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                                    "Sigma[rep_cand:(Intercept),(Intercept)]",
+                                    "Sigma[year:(Intercept),(Intercept)]",
+                                    "Sigma[state:year:(Intercept),(Intercept)]",
+                                    "Sigma[state:(Intercept),(Intercept)]",
+                                    "Sigma[census_region:year:(Intercept),(Intercept)]",
+                                    "Sigma[demo_cluster:year:(Intercept),(Intercept)]",
+                                    "Sigma[chamber:year:(Intercept),(Intercept)]"))
+rhat(backtest_model, pars = c("Sigma[dem_cand:(Intercept),(Intercept)]",
+                              "Sigma[rep_cand:(Intercept),(Intercept)]",
+                              "Sigma[year:(Intercept),(Intercept)]",
+                              "Sigma[state:year:(Intercept),(Intercept)]",
+                              "Sigma[state:(Intercept),(Intercept)]",
+                              "Sigma[census_region:(Intercept),(Intercept)]",
+                              "Sigma[demo_cluster:(Intercept),(Intercept)]",
+                              "Sigma[census_region:year:(Intercept),(Intercept)]",
+                              "Sigma[demo_cluster:year:(Intercept),(Intercept)]",
+                              "Sigma[chamber:year:(Intercept),(Intercept)]"))
+
+poster_2024 <- posterior_predict(backtest_model, newdata = data_24)
+
+pp_check(backtest_model, nreps = 100)
+
+y_hat_2024 <- colMeans(poster_2024)
+
+sd_yhat_2024 <- colSds(poster_2024)
+
+fund_chances <- apply(poster_2024, 2, \(x) mean(x > 0) * 100)
+
+tot_seats_sims <- apply(poster_2024, 1, \(x) sum(x > 0))
+
+y_act_2024 <- data_24$dem_pct_2p_offset
+
+mae <- mean(abs(y_hat_2024 - y_act_2024))
+
+data_24 <- data_24 %>% mutate(
+  y_pred = y_hat_2024 + 50,
+  y_act = dem_pct_2p,
+  y_pred_sd = sd_yhat_2024,
+  fund_chances = fund_chances
+) %>% mutate(
+  abs_err = abs(y_pred - y_act),
+  err = y_pred - y_act
+) %>% mutate(
+  z = err / y_pred_sd
+) %>% mutate(
+  in_95_ci = if_else(abs(z) < 2, TRUE, FALSE),
+  in_68_ci = if_else(abs(z) < 1, TRUE, FALSE),
+  index = row_number()
+) %>% mutate(
+  sims = lapply(index, function(index) poster_2024[, index])
+)
+
+ggplot() + geom_point(mapping = aes(x = y_hat_2024 + 50, y = y_act_2024 + 50)) +
+  labs(
+    x = "Predicted values",
+    y = "Actual values",
+    title = "Predicted vs actual (Backtesting, 2024)"
+  ) + xlim(40, 60) + ylim(35, 65)
+
+ggplot(data = data_24, mapping = aes(x = y_pred, y = fund_chances)) + geom_point() +
+  labs(
+    x = "Predicted values",
+    y = "Predicted chances"
+  )
+
+ggplot() + geom_histogram(mapping = aes(x = tot_seats_sims), binwidth=1)
+
+View(data_24 %>% filter((y_act < 55 & y_act > 45) | (y_pred < 55 & y_pred > 45)) %>% select(year, district, dem_cand, rep_cand, y_pred, y_act, abs_err, fund_chances))
+
+data_24_sen <- data_24 %>% filter(chamber == "Senate")
+
+write_csv(data_24_sen %>% select(-sims), "backtesting/backtesting_res_fundamentals_senate_2024.csv")
