@@ -27,7 +27,7 @@ data <- data %>% mutate(
 #  prior_lean = pvi - (elasticity * generic_ballot_avg)
 #)
 
-set.seed(3700)
+set.seed(3800)
 
 train_data <- bind_rows(data %>% filter(chamber == "House"), data %>% filter(chamber == "Senate") %>% 
                           sample_frac(0.67))
@@ -46,7 +46,7 @@ fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                    prior = student_t(location = 0, scale = 4, df = 5, autoscale = TRUE),
                    adapt_delta = 0.95,
                    refresh = 10,
-                   iter = 5000*2,
+                   iter = 2000*2,
                    seed = 1010
 )
 print(fit)
