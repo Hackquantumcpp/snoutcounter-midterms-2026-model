@@ -166,7 +166,7 @@ backtest_model <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:basel
                                 sqrt_effn:net_scandal_score + net_scandal_score,
                               family = gaussian(),
                               data = pre24,
-                              prior = normal(0, 4, autoscale = TRUE),
+                              prior = student_t(location = 0, scale = 4, df = 5, autoscale = TRUE),
                               adapt_delta = 0.95,
                               refresh = 100,
                               iter = 2000*2,
