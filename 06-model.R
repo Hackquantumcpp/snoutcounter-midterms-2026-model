@@ -20,6 +20,8 @@ data <- data %>% mutate(
   funds_pct_margin = if_else(dem_tot_funds + rep_tot_funds == 0, 0, (dem_tot_funds - rep_tot_funds) / (dem_tot_funds + rep_tot_funds)) * 100
 )
 
+set.seed(3700)
+
 fit <- stan_glmer( dem_pct_2p_offset ~ 0 + baseline + sqrt_effn:baseline +
                      funds_pct_margin + inc_dummy +
                      polarization:funds_pct_margin + polarization:inc_dummy +
