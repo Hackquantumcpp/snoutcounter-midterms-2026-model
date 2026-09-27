@@ -109,6 +109,12 @@ poll_avg <- function(data_frame, state, candidate) {
     distinct(poll_id, .keep_all = TRUE) %>% 
     mutate(population = recode(population, "b" = "LV", "c" = "RV", "e" = "A"))
   
+  df <- df %>%
+    mutate(cands_polled_type = recode(cands_polled_type, "third_party" = "b", "head_to_head" = "c")) %>% 
+    arrange(cands_polled_type) %>% 
+    distinct(poll_id, .keep_all = TRUE) %>% 
+    mutate(cands_polled_type = recode(cands_polled_type, "b" = "third_party", "c" = "head_to_head"))
+  
   ### Sample size weights
   size_cap <- 5000
   df_nullsampsize <- df %>% filter(is.na(sample_size) == TRUE)
@@ -242,7 +248,7 @@ avg_final <- function(data_frame, state, candidate, output_type) {
     date_interv <- sort(unique(df_weights$end_date))
     
     avg_oneday <- function(date) {
-      df_weights_onday <- poll_avg(data_frame %>% filter(mdy(end_date) <= date), cycle, state, candidate)
+      df_weights_onday <- poll_avg(data_frame %>% filter(mdy(end_date) <= date), state, candidate)
       #print(paste(date, dim(data_frame %>% filter(mdy(end_date) <= date))))
       avg <- sum(df_weights_onday$total_weight * df_weights_onday$pct)
       std <- sqrt(sum(df_weights_onday$total_weight * (df_weights_onday$pct - avg)^2))
