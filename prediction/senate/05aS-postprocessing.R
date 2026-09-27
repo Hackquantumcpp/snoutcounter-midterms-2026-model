@@ -44,9 +44,9 @@ if (run_date %in% output$date) {
   output <- output %>% filter(date != run_date)
 }
 
-output <- output %>% add_row(date = run_date, y = mean_seats_tot, geo = "US House", type = "seats") %>%
-  add_row(date = run_date, y = chamber_win_chance, geo = "US House", type = "chance") %>%
-  add_row(date = run_date, y = sd_seats, geo = "US House", type = "seats_sd")
+output <- output %>% add_row(date = run_date, y = mean_seats_tot, geo = "US Senate", type = "seats") %>%
+  add_row(date = run_date, y = chamber_win_chance, geo = "US Senate", type = "chance") %>%
+  add_row(date = run_date, y = sd_seats, geo = "US Senate", type = "seats_sd")
 
 seat_level_out <- data %>% select(state_po, y_pred, y_pred_sd, chance, ci_low, ci_hi) %>% mutate(
   date = run_date
