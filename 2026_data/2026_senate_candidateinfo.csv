@@ -1,36 +1,36 @@
-,state,dem_cand,rep_cand,dem_inc_any,rep_inc_any
-0,Alabama,Everett Weiss,Barry Moore,False,False
-1,Alaska,Mary Peltola,Dan S. Sullivan,False,True
-2,Arkansas,Hallie Shoffner,Tom Cotton,False,True
-3,Colorado,John Hickenlooper,Mark Baisley,True,False
-4,Delaware,Chris Coons,Michael Katz,True,False
-5,Florida,Angie Nixon,Ashley Moody,False,True
-6,Georgia,Jon Ossoff,Mike Collins,True,False
-7,Idaho,Todd Achilles,Jim Risch,False,True
-8,Illinois,Juliana Stratton,Don Tracy,False,False
-9,Iowa,Josh Turek,Ashley Hinson,False,False
-10,Kansas,Adam Hamilton,Roger Marshall,False,True
-11,Kentucky,Charles Booker,Andy Barr,False,False
-12,Louisiana,Jamie Davis,Julia Letlow,False,False
-13,Maine,Troy Jackson,Susan Collins,False,True
-14,Massachusetts,Ed Markey,John Deaton,True,False
-15,Michigan,Abdul El-Sayed,Mike J. Rogers,False,False
-16,Minnesota,Peggy Flanagan,Michele Tafoya,False,False
-17,Mississippi,Scott Colom,Cindy Hyde-Smith,False,True
-18,Montana,Seth Bodnar,Kurt Alme,False,False
-19,Nebraska,Dan Osborn,Pete Ricketts,False,True
-20,New Hampshire,Chris Pappas,John Sununu,False,False
-21,New Jersey,Cory Booker,Justin Murphy,True,False
-22,New Mexico,Ben Ray Lujan,Larry Marker,True,False
-23,North Carolina,Roy Cooper,Michael Whatley,False,False
-24,Ohio,Sherrod Brown,Jon Husted,False,True
-25,Oklahoma,N'Kiyla Thomas,Kevin Hern,False,False
-26,Oregon,Jeff Merkley,David Brock Smith,True,False
-27,Rhode Island,Jack Reed,Raymond McKay,True,False
-28,South Carolina,Annie Andrews,Darline Graham,False,False
-29,South Dakota,Brian Bengs,Mike Rounds,False,True
-30,Tennessee,Marquita Bradshaw,Bill Hagerty,False,True
-31,Texas,James Talarico,Ken Paxton,False,False
-32,Virginia,Mark Warner,Bert Mizusawa,True,False
-33,West Virginia,Rachel Fetty Anderson,Shelley Moore Capito,False,True
-34,Wyoming,James W. Byrd,Harriet Hageman,False,False
+,state,dem_cand,rep_cand,dem_inc_any,rep_inc_any,current_party
+0,Alabama,Everett Weiss,Barry Moore,False,False,R
+1,Alaska,Mary Peltola,Dan S. Sullivan,False,True,R
+2,Arkansas,Hallie Shoffner,Tom Cotton,False,True,R
+3,Colorado,John Hickenlooper,Mark Baisley,True,False,D
+4,Delaware,Chris Coons,Michael Katz,True,False,D
+5,Florida,Angie Nixon,Ashley Moody,False,True,R
+6,Georgia,Jon Ossoff,Mike Collins,True,False,D
+7,Idaho,Todd Achilles,Jim Risch,False,True,R
+8,Illinois,Juliana Stratton,Don Tracy,False,False,D
+9,Iowa,Josh Turek,Ashley Hinson,False,False,R
+10,Kansas,Adam Hamilton,Roger Marshall,False,True,R
+11,Kentucky,Charles Booker,Andy Barr,False,False,R
+12,Louisiana,Jamie Davis,Julia Letlow,False,False,R
+13,Maine,Troy Jackson,Susan Collins,False,True,R
+14,Massachusetts,Ed Markey,John Deaton,True,False,D
+15,Michigan,Abdul El-Sayed,Mike J. Rogers,False,False,D
+16,Minnesota,Peggy Flanagan,Michele Tafoya,False,False,D
+17,Mississippi,Scott Colom,Cindy Hyde-Smith,False,True,R
+18,Montana,Seth Bodnar,Kurt Alme,False,False,R
+19,Nebraska,Dan Osborn,Pete Ricketts,False,True,R
+20,New Hampshire,Chris Pappas,John Sununu,False,False,D
+21,New Jersey,Cory Booker,Justin Murphy,True,False,D
+22,New Mexico,Ben Ray Lujan,Larry Marker,True,False,D
+23,North Carolina,Roy Cooper,Michael Whatley,False,False,R
+24,Ohio,Sherrod Brown,Jon Husted,False,True,R
+25,Oklahoma,N'Kiyla Thomas,Kevin Hern,False,False,R
+26,Oregon,Jeff Merkley,David Brock Smith,True,False,D
+27,Rhode Island,Jack Reed,Raymond McKay,True,False,D
+28,South Carolina,Annie Andrews,Darline Graham,False,False,R
+29,South Dakota,Brian Bengs,Mike Rounds,False,True,R
+30,Tennessee,Marquita Bradshaw,Bill Hagerty,False,True,R
+31,Texas,James Talarico,Ken Paxton,False,False,R
+32,Virginia,Mark Warner,Bert Mizusawa,True,False,D
+33,West Virginia,Rachel Fetty Anderson,Shelley Moore Capito,False,True,R
+34,Wyoming,James W. Byrd,Harriet Hageman,False,False,R
