@@ -227,7 +227,7 @@ avg_final <- function(data_frame, state, candidate, output_type) {
   
   message(paste("Running average for", state, "SEN, Candidate:", candidate))
   
-  if (nrow(df_weights) <= 1) {
+  if (nrow(df_weights) <= 2) {
     avg <- sum(df_weights$total_weight * df_weights$pct)
     std <- sqrt(sum(df_weights$total_weight * (df_weights$pct - avg)^2))
     lower_ci <- avg - 1.96*std
@@ -312,6 +312,9 @@ avg_final <- function(data_frame, state, candidate, output_type) {
         np_a <- 0
       }
       nospon_a <- tidy_raneffs %>% filter(group == 'sponsor_candidate' & level == 'NA') %>% pull(estimate)
+      if (!('NA' %in% (tidy_raneffs %>% filter(group == 'sponsor_candidate'))$level)) {
+        nospon_a <- 0
+      }
       
       sign_flip_cols <- intersect(c("pollster", "mode"), usable_cols)
       other_cols <- intersect(c("population", "partisan", "sponsor_candidate"), usable_cols)
@@ -393,7 +396,7 @@ avg_final <- function(data_frame, state, candidate, output_type) {
   
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*predictive_plus_minus + 1,
-    time_adj = exp(-as.numeric(election_date - end_date, units = "days")/30),
+    time_adj = exp(-as.numeric(today() - end_date, units = "days")/30),
     effn = effn_notime * time_adj * partisan_downweight * internal_downweight * zone_flood_weight
   ) # Measure of "effective" number of polls
   
