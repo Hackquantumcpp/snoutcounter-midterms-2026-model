@@ -1,3 +1,4 @@
-vars,x
-means_seats_tot,51.348375000000004
-chamber_win_chance,58.599999999999994
+,vars,x
+0,means_seats_tot,51.35875
+1,chamber_win_chance,58.575
+0,sv_bias,7.2000257794712095
