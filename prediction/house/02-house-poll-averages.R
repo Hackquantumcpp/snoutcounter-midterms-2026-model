@@ -9,7 +9,8 @@ banned_pollsters <- c("ActiVote",
                       "Trafalgar Group/InsiderAdvantage",
                       "Big Data Poll",
                       "National Association of Independent Pollsters",
-                      "Rasmussen Reports")
+                      "Rasmussen Reports",
+                      "The Public Sentiment Institute")
 
 polls <- read_csv("transformed/relevent_house_polls.csv")
 
