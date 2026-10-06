@@ -1,4 +1,4 @@
-,vars,x
-0,means_seats_tot,51.46825
-1,chamber_win_chance,59.3375
-0,sv_bias,6.847734997552678
+,Unnamed: 0,vars,x
+0,0.0,means_seats_tot,51.46825
+1,1.0,chamber_win_chance,59.3375
+0,,sv_bias,6.847734997552678
