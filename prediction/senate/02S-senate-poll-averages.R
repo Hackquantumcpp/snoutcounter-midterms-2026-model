@@ -15,7 +15,8 @@ banned_pollsters <- c("ActiVote",
                       "Big Data Poll",
                       "National Association of Independent Pollsters",
                       "Rasmussen Reports",
-                      "The Public Sentiment Institute")
+                      "The Public Sentiment Institute",
+                      "Wedgewood Polls")
 
 polls <- read_csv("transformed/relevent_senate_polls.csv")
 
