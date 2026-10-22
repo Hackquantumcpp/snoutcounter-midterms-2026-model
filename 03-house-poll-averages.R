@@ -10,7 +10,11 @@ banned_pollsters <- c("ActiVote",
                       "Trafalgar Group/InsiderAdvantage",
                       "Big Data Poll",
                       "National Association of Independent Pollsters",
-                      "Rasmussen Reports")
+                      "Rasmussen Reports",
+                      "Rasmussen Reports/Pulse Opinion Research",
+                      "The Public Sentiment Institute",
+                      "Wedgewood Polls"
+)
 
 ## 2018-24 House polling
 
@@ -69,6 +73,13 @@ tracking_polls_pipeline <- function(data_frame, cycle, state,
   }
   
   return(df_tracking)
+}
+polls_in_window <- function(data_frame, date, pid) {
+  df <- data_frame # Copy data frame
+  
+  thres = date - 14
+  df <- df %>% filter(poll_spon_id == pid & end_date >= thres)
+  return(max(dim(df)[1], 1)) ## REMEMBER, IMPORTANT, NOT ZERO INDEXED IN R!!!
 }
 poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
   # Copy data frame, filter for all those less than given date
@@ -163,7 +174,7 @@ poll_avg <- function(data_frame, cycle, state, seat_number, candidate) {
     return(polls_in_window(df, end_date, pid))
   }
   
-  ### Multiple polls in short window weights
+  ## Multiple polls in short window weights
   # df <- df %>% group_by(pollster) %>%
   #  mutate(poll_spon_id = cur_group_id()) %>%
   #  ungroup()
@@ -211,7 +222,7 @@ avg_final <- function(data_frame, cycle, state, seat_number, candidate) {
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*pollscore + 1,
     time_adj = exp(-as.numeric(election_date - end_date, units = "days")/30),
-    effn = effn_notime * time_adj
+    effn = effn_notime * time_adj * partisan_downweight * internal_downweight
   ) # Measure of "effective" number of polls
   
   return(c("avg" = avg, 
@@ -384,7 +395,7 @@ avg_final_1416 <- function(data_frame, year, location, candidate, cand_1or2) {
   df_weights <- df_weights %>% mutate(
     effn_notime = -0.3*pollscore + 1,
     time_adj = exp(-as.numeric(electiondate - polldate, units = "days")/30),
-    effn = effn_notime * time_adj
+    effn = effn_notime * time_adj * partisan_downweight * internal_downweight
   ) # Measure of "effective" number of polls
   
   return(c("avg" = avg, 

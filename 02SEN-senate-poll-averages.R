@@ -14,7 +14,10 @@ banned_pollsters <- c("ActiVote",
                       "Trafalgar Group/InsiderAdvantage",
                       "Big Data Poll",
                       "National Association of Independent Pollsters",
-                      "Rasmussen Reports")
+                      "Rasmussen Reports",
+                      "Rasmussen Reports/Pulse Opinion Research",
+                      "The Public Sentiment Institute",
+                      "Wedgewood Polls")
 ## 2018-2024 Senate polling
 
 filepath <- "data/polls/senate_polls_historical.csv"
