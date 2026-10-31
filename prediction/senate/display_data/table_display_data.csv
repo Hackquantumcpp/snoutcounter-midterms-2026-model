@@ -1,36 +1,36 @@
 ,State,Democrat,Republican,Rating,Dem Chance,Rep Chance,Projected Margin,Swing from 2024 Pres,Tipping Point Chance
-0,Alabama,Everett Weiss,Barry Moore,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+17.8,D+13.1,0.0
-1,Alaska,Mary Peltola,Dan S. Sullivan,Likely D,"<p style=""color:blue;"">83.7%</p>","<p style=""color:red;"">16.3%</p>",D+6.7,D+20.4,5.050000000000001
-2,Arkansas,Hallie Shoffner,Tom Cotton,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+20.5,D+10.8,0.0
-3,Colorado,John Hickenlooper,Mark Baisley,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+23.4,D+12.1,0.08750000000000001
-4,Delaware,Chris Coons,Michael Katz,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+26.3,D+11.4,0.22499999999999998
-5,Florida,Angie Nixon,Ashley Moody,Likely R,"<p style=""color:blue;"">22.6%</p>","<p style=""color:red;"">77.4%</p>",R+5.5,D+7.8,2.3
-6,Georgia,Jon Ossoff,Mike Collins,Safe D,"<p style=""color:blue;"">95.4%</p>","<p style=""color:red;"">4.6%</p>",D+11.4,D+13.6,1.3875
-7,Idaho,Todd Achilles (Ind),Jim Risch,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+18.2,D+19.4,0.0
-8,Illinois,Juliana Stratton,Don Tracy,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+20.8,D+9.7,0.0
-9,Iowa,Josh Turek,Ashley Hinson,Tossup,"<p style=""color:blue;"">40.3%</p>","<p style=""color:red;"">59.7%</p>",R+1.6,D+11.8,8.0
-10,Kansas,Adam Hamilton,Roger Marshall,Tossup,"<p style=""color:blue;"">44.9%</p>","<p style=""color:red;"">55.1%</p>",R+0.8,D+15.6,8.9375
-11,Kentucky,Charles Booker,Andy Barr,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+19.6,D+11.4,0.0
-12,Louisiana,Jamie Davis,Julia Letlow,Very Likely R,"<p style=""color:blue;"">5.1%</p>","<p style=""color:red;"">94.9%</p>",R+11.4,D+10.9,0.05
-13,Maine,Troy Jackson,Susan Collins,Tossup,"<p style=""color:blue;"">49.8%</p>","<p style=""color:red;"">50.2%</p>",R+0.0,R+7.1,9.5
-14,Massachusetts,Ed Markey,John Deaton,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+32.6,D+6.7,2.9875
-15,Michigan,Abdul El-Sayed,Mike J. Rogers,Tossup,"<p style=""color:blue;"">59.8%</p>","<p style=""color:red;"">40.2%</p>",D+1.8,D+3.2,11.0375
-16,Minnesota,Peggy Flanagan,Michele Tafoya,Likely D,"<p style=""color:blue;"">87.0%</p>","<p style=""color:red;"">13.0%</p>",D+8.2,D+3.9,2.8625000000000003
-17,Mississippi,Scott Colom,Cindy Hyde-Smith,Very Likely R,"<p style=""color:blue;"">9.2%</p>","<p style=""color:red;"">90.8%</p>",R+9.5,D+13.6,0.325
-18,Montana,Seth Bodnar (Ind),Kurt Alme,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+20.0,D+0.6,0.0
-19,Nebraska,Dan Osborn (Ind),Pete Ricketts,Lean R,"<p style=""color:blue;"">29.7%</p>","<p style=""color:red;"">70.3%</p>",R+3.7,D+17.2,4.6375
-20,New Hampshire,Chris Pappas,John Sununu,Safe D,"<p style=""color:blue;"">95.6%</p>","<p style=""color:red;"">4.4%</p>",D+11.8,D+9.0,0.7000000000000001
-21,New Jersey,Cory Booker,Justin Murphy,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+19.8,D+13.8,0.0
-22,New Mexico,Ben Ray Lujan,Larry Marker,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+20.3,D+14.2,0.0
-23,North Carolina,Roy Cooper,Michael Whatley,Very Likely D,"<p style=""color:blue;"">94.6%</p>","<p style=""color:red;"">5.4%</p>",D+11.5,D+14.7,0.44999999999999996
-24,Ohio,Sherrod Brown,Jon Husted,Tossup,"<p style=""color:blue;"">58.4%</p>","<p style=""color:red;"">41.6%</p>",D+1.5,D+12.8,9.025
-25,Oklahoma,N'Kiyla Thomas,Kevin Hern,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+25.6,D+9.3,0.0125
-26,Oregon,Jeff Merkley,David Brock Smith,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+28.4,D+13.5,0.5625
-27,Rhode Island,Jack Reed,Raymond McKay,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+34.5,D+20.3,5.0625
-28,South Carolina,Annie Andrews,Darline Graham,Tossup,"<p style=""color:blue;"">44.0%</p>","<p style=""color:red;"">56.0%</p>",R+1.1,D+17.1,8.025
-29,South Dakota,Brian Bengs (Ind),Mike Rounds,Safe R,"<p style=""color:blue;"">4.3%</p>","<p style=""color:red;"">95.7%</p>",R+11.8,D+18.1,0.44999999999999996
-30,Tennessee,Marquita Bradshaw,Bill Hagerty,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+23.7,D+6.4,0.0125
-31,Texas,James Talarico,Ken Paxton,Tilt D,"<p style=""color:blue;"">62.4%</p>","<p style=""color:red;"">37.6%</p>",D+2.3,D+16.2,10.037500000000001
-32,Virginia,Mark Warner,Bert Mizusawa,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+18.7,D+12.8,0.0125
-33,West Virginia,Rachel Fetty Anderson,Shelley Moore Capito,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+38.8,D+3.9,5.2
-34,Wyoming,James W. Byrd,Harriet Hageman,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+37.4,D+9.6,3.0625
+0,Alabama,Everett Weiss,Barry Moore,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+18.0,D+12.9,0.0
+1,Alaska,Mary Peltola,Dan S. Sullivan,Likely D,"<p style=""color:blue;"">82.8%</p>","<p style=""color:red;"">17.2%</p>",D+6.4,D+20.1,5.5375
+2,Arkansas,Hallie Shoffner,Tom Cotton,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+20.7,D+10.6,0.0
+3,Colorado,John Hickenlooper,Mark Baisley,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+23.2,D+11.9,0.08750000000000001
+4,Delaware,Chris Coons,Michael Katz,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+26.1,D+11.2,0.1875
+5,Florida,Angie Nixon,Ashley Moody,Likely R,"<p style=""color:blue;"">21.9%</p>","<p style=""color:red;"">78.1%</p>",R+5.6,D+7.6,2.1624999999999996
+6,Georgia,Jon Ossoff,Mike Collins,Safe D,"<p style=""color:blue;"">95.3%</p>","<p style=""color:red;"">4.7%</p>",D+11.3,D+13.5,1.4874999999999998
+7,Idaho,Todd Achilles (Ind),Jim Risch,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+18.3,D+19.2,0.0
+8,Illinois,Juliana Stratton,Don Tracy,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+20.7,D+9.5,0.0125
+9,Iowa,Josh Turek,Ashley Hinson,Tossup,"<p style=""color:blue;"">40.2%</p>","<p style=""color:red;"">59.8%</p>",R+1.6,D+11.8,7.85
+10,Kansas,Adam Hamilton,Roger Marshall,Tossup,"<p style=""color:blue;"">44.0%</p>","<p style=""color:red;"">56.0%</p>",R+1.0,D+15.4,8.725
+11,Kentucky,Charles Booker,Andy Barr,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+19.8,D+11.2,0.0
+12,Louisiana,Jamie Davis,Julia Letlow,Very Likely R,"<p style=""color:blue;"">7.8%</p>","<p style=""color:red;"">92.2%</p>",R+10.0,D+12.3,0.17500000000000002
+13,Maine,Troy Jackson,Susan Collins,Tossup,"<p style=""color:blue;"">50.3%</p>","<p style=""color:red;"">49.7%</p>",D+0.1,R+7.0,9.575
+14,Massachusetts,Ed Markey,John Deaton,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+32.5,D+6.6,3.0
+15,Michigan,Abdul El-Sayed,Mike J. Rogers,Tossup,"<p style=""color:blue;"">59.5%</p>","<p style=""color:red;"">40.5%</p>",D+1.8,D+3.2,11.262500000000001
+16,Minnesota,Peggy Flanagan,Michele Tafoya,Likely D,"<p style=""color:blue;"">88.4%</p>","<p style=""color:red;"">11.6%</p>",D+8.7,D+4.4,2.125
+17,Mississippi,Scott Colom,Cindy Hyde-Smith,Very Likely R,"<p style=""color:blue;"">8.7%</p>","<p style=""color:red;"">91.3%</p>",R+9.7,D+13.4,0.3375
+18,Montana,Seth Bodnar (Ind),Kurt Alme,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+19.9,D+0.7,0.0
+19,Nebraska,Dan Osborn (Ind),Pete Ricketts,Lean R,"<p style=""color:blue;"">29.1%</p>","<p style=""color:red;"">70.9%</p>",R+3.8,D+17.0,4.4375
+20,New Hampshire,Chris Pappas,John Sununu,Safe D,"<p style=""color:blue;"">95.6%</p>","<p style=""color:red;"">4.5%</p>",D+11.8,D+9.0,0.7000000000000001
+21,New Jersey,Cory Booker,Justin Murphy,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+19.6,D+13.6,0.0125
+22,New Mexico,Ben Ray Lujan,Larry Marker,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+20.2,D+14.0,0.0
+23,North Carolina,Roy Cooper,Michael Whatley,Very Likely D,"<p style=""color:blue;"">94.4%</p>","<p style=""color:red;"">5.6%</p>",D+11.3,D+14.6,0.43750000000000006
+24,Ohio,Sherrod Brown,Jon Husted,Tossup,"<p style=""color:blue;"">57.7%</p>","<p style=""color:red;"">42.3%</p>",D+1.4,D+12.7,9.112499999999999
+25,Oklahoma,N'Kiyla Thomas,Kevin Hern,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+25.8,D+9.1,0.0
+26,Oregon,Jeff Merkley,David Brock Smith,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+28.2,D+13.3,0.5625
+27,Rhode Island,Jack Reed,Raymond McKay,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+34.3,D+20.1,5.0
+28,South Carolina,Annie Andrews,Darline Graham,Tossup,"<p style=""color:blue;"">48.6%</p>","<p style=""color:red;"">51.4%</p>",R+0.2,D+17.9,8.3
+29,South Dakota,Brian Bengs (Ind),Mike Rounds,Safe R,"<p style=""color:blue;"">4.0%</p>","<p style=""color:red;"">96.0%</p>",R+12.1,D+17.8,0.36250000000000004
+30,Tennessee,Marquita Bradshaw,Bill Hagerty,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+23.9,D+6.2,0.0125
+31,Texas,James Talarico,Ken Paxton,Tilt D,"<p style=""color:blue;"">63.9%</p>","<p style=""color:red;"">36.1%</p>",D+2.6,D+16.5,10.174999999999999
+32,Virginia,Mark Warner,Bert Mizusawa,Safe D,"<p style=""color:blue;"">>99%</p>","<p style=""color:red;""><1%</p>",D+18.5,D+12.6,0.0
+33,West Virginia,Rachel Fetty Anderson,Shelley Moore Capito,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+39.0,D+3.7,5.3625
+34,Wyoming,James W. Byrd,Harriet Hageman,Safe R,"<p style=""color:blue;""><1%</p>","<p style=""color:red;"">>99%</p>",R+37.6,D+9.4,3.0
