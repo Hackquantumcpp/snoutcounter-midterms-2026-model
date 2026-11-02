@@ -428,3 +428,4 @@ cand_avg_dfs <- cand_averages %>% select(state, candidate_name, party, starts_wi
 cand_averages <- cand_averages %>% select(-starts_with("dataframe"))
 
 write_csv(cand_averages, "transformed/senate_polling_averages.csv")
+saveRDS(cand_avg_dfs, "transformed/senate_pollavg_df_directory.RDS")
