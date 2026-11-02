@@ -237,9 +237,7 @@ avg_final <- function(data_frame, state, candidate, output_type) {
     lower_ci <- avg - 1.96*std
     upper_ci <- avg + 1.96*std
     
-    if (output_type == "dataframe") {
-      return(tibble()) ## return empty tibble; poll avg time series not valuable also too lazy lol
-    }
+    df_output <- tibble()
   }
   
   else {  
@@ -391,9 +389,7 @@ avg_final <- function(data_frame, state, candidate, output_type) {
       lower_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(lower_ci)
       upper_ci <- df_avg_final %>% filter(end_date == max(df_avg_final$end_date)) %>% pull(upper_ci)
       
-      if (output_type == "dataframe") {
-        df_output <- df_avg_final
-      }
+      df_output <- df_avg_final
     }
     
   }
@@ -412,7 +408,8 @@ avg_final <- function(data_frame, state, candidate, output_type) {
            "std" = std, 
            "lower_ci" = lower_ci, 
            "upper_ci" = upper_ci,
-           "effn" = sum(df_weights$effn)))
+           "effn" = sum(df_weights$effn),
+           "dataframe" = df_output))
 }
 
 unique_cands <- unique(
@@ -425,5 +422,9 @@ cand_averages <- unique_cands %>% mutate(
     return (avg_final(polls, state, candidate_name, "stats"))
   })
 ) %>% unnest_wider(output)
+
+cand_avg_dfs <- cand_averages %>% select(state, candidate_name, party, starts_with("dataframe"))
+
+cand_averages <- cand_averages %>% select(-starts_with("dataframe"))
 
 write_csv(cand_averages, "transformed/senate_polling_averages.csv")
